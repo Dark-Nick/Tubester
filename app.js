@@ -603,37 +603,28 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        // Si la cámara de registro estaba activa, la detenemos para liberar el hardware
+        if (html5QrCodeRegistro && isScanningRegistro) {
+            await detenerScannerRegistro();
+        }
+
         scannerError.classList.add("oculto");
         scannerError.textContent = "";
         modalScanner.classList.remove("oculto");
 
         try {
             if (!html5QrCode) {
-                html5QrCode = new Html5Qrcode("reader", false);
+                html5QrCode = new Html5Qrcode("reader");
             }
 
             const config = {
-                fps: 8,
-                qrbox: (w, h) => {
-                    const min = Math.min(w, h);
-                    const size = Math.max(200, Math.floor(min * 0.75));
-                    return { width: size, height: size };
-                },
-                aspectRatio: 1.0,
-                disableFlip: true,
-                experimentalFeatures: {
-                    useBarCodeDetectorIfSupported: true
-                }
-            };
-
-            const cameraConfig = {
-                facingMode: "environment",
-                width: { ideal: 1280, max: 1920 },
-                height: { ideal: 720, max: 1080 }
+                fps: 10,
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0
             };
 
             await html5QrCode.start(
-                cameraConfig,
+                { facingMode: "environment" },
                 config,
                 onScanSuccess,
                 () => {}
@@ -765,36 +756,27 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        // Si la cámara del juego principal estaba activa, la detenemos
+        if (html5QrCode && isScanning) {
+            await detenerScanner();
+        }
+
         contenedorScannerRegistro.classList.remove("oculto");
         btnEscanearRegistro.classList.add("oculto");
 
         try {
             if (!html5QrCodeRegistro) {
-                html5QrCodeRegistro = new Html5Qrcode("reader-registro", false);
+                html5QrCodeRegistro = new Html5Qrcode("reader-registro");
             }
 
             const config = {
-                fps: 8,
-                qrbox: (w, h) => {
-                    const min = Math.min(w, h);
-                    const size = Math.max(180, Math.floor(min * 0.75));
-                    return { width: size, height: size };
-                },
-                aspectRatio: 1.0,
-                disableFlip: true,
-                experimentalFeatures: {
-                    useBarCodeDetectorIfSupported: true
-                }
-            };
-
-            const cameraConfig = {
-                facingMode: "environment",
-                width: { ideal: 1280, max: 1920 },
-                height: { ideal: 720, max: 1080 }
+                fps: 10,
+                qrbox: { width: 220, height: 220 },
+                aspectRatio: 1.0
             };
 
             await html5QrCodeRegistro.start(
-                cameraConfig,
+                { facingMode: "environment" },
                 config,
                 onScanRegistroSuccess,
                 () => {}
