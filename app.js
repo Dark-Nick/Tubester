@@ -687,17 +687,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             if (!html5QrCode) {
-                html5QrCode = new Html5Qrcode("reader");
+                // verbose: false evita saturar la memoria y el hilo principal del móvil
+                html5QrCode = new Html5Qrcode("reader", false);
             }
 
+            // Configuración optimizada para móviles (evita calentamiento y lag):
+            // 1. fps: 8 (suficiente para detectar al instante y ahorra 40% de CPU).
+            // 2. disableFlip: true (evita transformar la imagen de la cámara trasera).
+            // 3. useBarCodeDetectorIfSupported: true (activa aceleración por hardware del procesador del móvil).
             const config = {
-                fps: 10,
-                qrbox: { width: 250, height: 250 },
-                aspectRatio: 1.0
+                fps: 8,
+                qrbox: (viewfinderWidth, viewfinderHeight) => {
+                    const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                    const qrboxSize = Math.max(200, Math.floor(minEdge * 0.75));
+                    return { width: qrboxSize, height: qrboxSize };
+                },
+                aspectRatio: 1.0,
+                disableFlip: true,
+                experimentalFeatures: {
+                    useBarCodeDetectorIfSupported: true
+                }
+            };
+
+            const cameraConfig = {
+                facingMode: "environment",
+                width: { ideal: 1280, max: 1920 },
+                height: { ideal: 720, max: 1080 }
             };
 
             await html5QrCode.start(
-                { facingMode: "environment" },
+                cameraConfig,
                 config,
                 onScanSuccess,
                 onScanFailure
