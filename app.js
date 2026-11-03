@@ -815,8 +815,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // =========================================================================
-    // 10. ARRANQUE DE SERVICIOS
+    // 10. ARRANQUE DE SERVICIOS Y PWA
     // =========================================================================
     cargarBaseDeDatos();
     cargarYouTubeIframeAPI();
+
+    // Registro del Service Worker para funcionamiento como Progressive Web App (PWA)
+    if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+        navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log('[Hitster] PWA Service Worker registrado con éxito.'))
+            .catch(err => console.log('[Hitster] Error al registrar Service Worker:', err));
+    }
 });
