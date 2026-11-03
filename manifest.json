@@ -1,0 +1,18 @@
+{
+  "name": "Hitster YouTube Edition",
+  "short_name": "Hitster",
+  "description": "Lector de cartas musical para Hitster impulsado por YouTube",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#121212",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icono.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

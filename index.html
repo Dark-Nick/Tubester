@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hitster YouTube Edition</title>
+    <!-- Configuración PWA y Favicon -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icono.svg">
+    <meta name="theme-color" content="#121212">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="style.css">
+    <!-- CDN html5-qrcode para lectura de códigos QR -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+
+    <div class="contenedor-principal">
+        <!-- Pantalla de Inicio / Menú Principal -->
+        <header>
+            <h1>Hitster <span>YouTube</span></h1>
+            <p>La fiesta sin límites</p>
+        </header>
+
+        <main id="seccion-menu" class="card-menu">
+            <button id="btn-escanear" class="btn-principal">📷 Escanear Carta</button>
+            <button id="btn-manual" class="btn-secundario">🔍 Ingresar Código Manual</button>
+        </main>
+
+        <!-- Pantalla del Juego: Modo Ciego y Pantalla de Revelación (Fases 3 y 4) -->
+        <section id="seccion-juego" class="card-pantalla oculto">
+            <!-- Cabecera de estado -->
+            <div class="cabecera-ciega">
+                <span id="badge-modo-juego" class="badge-modo">🎧 Modo Ciego</span>
+                <span id="indicador-id-carta" class="badge-id-carta">HIT_---</span>
+            </div>
+
+            <!-- Contenedor del Reproductor de Video -->
+            <div class="contenedor-video-ciego">
+                <div id="youtube-player"></div>
+
+                <!-- Cortina Anti-Spoilers (Visible solo durante el Modo Ciego) -->
+                <div id="cortina-ciega" class="cortina-ciega">
+                    <div class="ecualizador-ondas">
+                        <div class="barra-onda onda-1"></div>
+                        <div class="barra-onda onda-2"></div>
+                        <div class="barra-onda onda-3"></div>
+                        <div class="barra-onda onda-4"></div>
+                        <div class="barra-onda onda-5"></div>
+                    </div>
+                    <p class="texto-cortina">Música en reproducción a ciegas</p>
+                    <button id="btn-forzar-play" class="btn-principal btn-forzar-play oculto">
+                        ▶️ Toca para iniciar audio
+                    </button>
+                </div>
+            </div>
+
+            <!-- BLOQUE A: Experiencia del MODO CIEGO (Fase 3) -->
+            <div id="bloque-modo-ciego" class="bloque-fase">
+                <p class="instruccion-ciega">Escucha atentamente... ¿De qué año es este hit?</p>
+
+                <!-- Temporizador y barra de progreso de 30s -->
+                <div class="contenedor-temporizador">
+                    <div class="temporizador-cabecera">
+                        <span class="temporizador-etiqueta">Tiempo de escucha</span>
+                        <span id="temporizador-segundos" class="temporizador-numero">30s</span>
+                    </div>
+                    <div class="barra-progreso-fondo">
+                        <div id="barra-progreso-relleno" class="barra-progreso-relleno"></div>
+                    </div>
+                </div>
+
+                <p id="estado-reproduccion" class="estado-reproduccion">Sintonizando canción...</p>
+
+                <!-- Controles del Modo Ciego -->
+                <div class="controles-modo-ciego">
+                    <button id="btn-play-pause" class="btn-secundario">⏸️ Pausar</button>
+                    <button id="btn-revelar" class="btn-principal btn-destacado">🎉 Revelar Carta</button>
+                </div>
+                
+                <button id="btn-cancelar-juego" class="btn-enlace">← Volver al Menú</button>
+            </div>
+
+            <!-- BLOQUE B: Experiencia de REVELACIÓN Y CONTROLES DUALES (Fase 4) -->
+            <div id="bloque-revelacion" class="bloque-fase oculto">
+                <!-- Gran Año de Lanzamiento -->
+                <div class="caja-gran-ano">
+                    <span class="subtitulo-ano">AÑO DE LANZAMIENTO</span>
+                    <div id="revelacion-ano" class="gran-ano">----</div>
+                </div>
+
+                <!-- Tarjeta Visual Ampliada con Metadata de la Canción -->
+                <div class="ficha-revelacion">
+                    <div class="dato-revelado-principal">
+                        <h2 id="revelacion-cancion" class="titulo-cancion">---</h2>
+                        <h3 id="revelacion-artista" class="subtitulo-artista">---</h3>
+                    </div>
+                    <div class="ficha-metadatos">
+                        <div class="meta-item">
+                            <span class="meta-etiqueta">Álbum:</span>
+                            <strong id="revelacion-album" class="meta-valor">---</strong>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-etiqueta">Fecha de estreno:</span>
+                            <strong id="revelacion-fecha" class="meta-valor">---</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estado del audio en la revelación -->
+                <p id="estado-revelacion" class="estado-reproduccion">Video revelado</p>
+
+                <!-- Controles Duales de Reproducción -->
+                <div class="controles-duales">
+                    <button id="btn-reproducir-inicio" class="btn-principal btn-accion-dual">
+                        ▶️ Festejo: Reproducir desde el Inicio (0:00)
+                    </button>
+                    <button id="btn-continuar-corte" class="btn-secundario btn-accion-dual">
+                        🔀 Continuar desde el corte
+                    </button>
+                    <button id="btn-toggle-video" class="btn-secundario">
+                        ⏸️ Pausar Video
+                    </button>
+                </div>
+
+                <!-- Botón para la siguiente ronda -->
+                <button id="btn-siguiente-carta" class="btn-principal btn-destacado btn-siguiente">
+                    🃏 Siguiente Carta
+                </button>
+            </div>
+        </section>
+
+        <!-- Panel de Error: Carta no encontrada -->
+        <section id="seccion-resultado" class="card-resultado oculto">
+            <div id="badge-estado" class="badge-estado error">⚠️ No registrada</div>
+            <div id="codigo-escaneado" class="badge-codigo">---</div>
+            <p id="mensaje-no-encontrado" class="mensaje-error">
+                La carta con este identificador no existe en la base de datos.
+            </p>
+            <button id="btn-reintentar" class="btn-secundario">Intentar con otra carta</button>
+        </section>
+    </div>
+
+    <!-- Modal del Visor de Cámara QR -->
+    <div id="modal-scanner" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="titulo-scanner">
+        <div class="modal-contenido">
+            <div class="modal-header">
+                <h2 id="titulo-scanner">Escanear QR</h2>
+                <button id="btn-cerrar-scanner" class="btn-icono" aria-label="Cerrar">&times;</button>
+            </div>
+            
+            <div id="reader-wrapper">
+                <div id="reader"></div>
+            </div>
+
+            <p class="scanner-instrucciones">Apunta la cámara al código QR de la carta de Hitster</p>
+            <div id="scanner-error" class="mensaje-error oculto"></div>
+            
+            <button id="btn-cancelar-scanner" class="btn-secundario">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- Modal de Ingreso Manual -->
+    <div id="modal-manual" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="titulo-manual">
+        <div class="modal-contenido">
+            <div class="modal-header">
+                <h2 id="titulo-manual">Ingreso Manual</h2>
+                <button id="btn-cerrar-manual" class="btn-icono" aria-label="Cerrar">&times;</button>
+            </div>
+
+            <form id="form-manual" class="manual-form">
+                <label for="input-codigo">Identificador de la carta:</label>
+                <input type="text" id="input-codigo" placeholder="Ej: HIT_001 o porta" required autocomplete="off">
+                <div class="modal-acciones">
+                    <button type="submit" class="btn-principal">Iniciar Juego</button>
+                    <button type="button" id="btn-cancelar-manual" class="btn-secundario">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts de la aplicación -->
+    <script src="canciones.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
