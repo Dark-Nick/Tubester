@@ -105,9 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const modalRegistro = document.getElementById("modal-registro");
     const btnCerrarRegistro = document.getElementById("btn-cerrar-registro");
     const selectVersionRegistro = document.getElementById("select-version-registro");
-    const btnEscanearRegistro = document.getElementById("btn-escanear-registro");
     const contenedorScannerRegistro = document.getElementById("contenedor-scanner-registro");
-    const btnDetenerScannerRegistro = document.getElementById("btn-detener-scanner-registro");
     const alertaRegistro = document.getElementById("alerta-registro");
     const contadorPendientes = document.getElementById("contador-pendientes");
     const listaPendientes = document.getElementById("lista-pendientes");
@@ -762,7 +760,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         contenedorScannerRegistro.classList.remove("oculto");
-        btnEscanearRegistro.classList.add("oculto");
 
         try {
             if (!html5QrCodeRegistro) {
@@ -771,8 +768,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const config = {
                 fps: 10,
-                qrbox: { width: 220, height: 220 },
-                aspectRatio: 1.0
+                qrbox: { width: 260, height: 260 }
+                /* Sin aspectRatio forzado — usa la proporción nativa de la cámara */
             };
 
             await html5QrCodeRegistro.start(
@@ -804,7 +801,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         contenedorScannerRegistro.classList.add("oculto");
-        btnEscanearRegistro.classList.remove("oculto");
     }
 
     /**
@@ -975,9 +971,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Modal de Registro de Nuevas Cartas (V1.0)
+    // La cámara arranca automáticamente al abrir el modal
     btnAbrirRegistro.addEventListener("click", () => {
         modalRegistro.classList.remove("oculto");
         renderizarListaPendientes();
+        iniciarScannerRegistro();
     });
 
     const cerrarModalRegistro = async () => {
@@ -986,8 +984,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     btnCerrarRegistro.addEventListener("click", cerrarModalRegistro);
-    btnEscanearRegistro.addEventListener("click", iniciarScannerRegistro);
-    btnDetenerScannerRegistro.addEventListener("click", detenerScannerRegistro);
 
     btnCopiarPendientes.addEventListener("click", copiarPendientesAlPortapapeles);
     btnDescargarPendientes.addEventListener("click", descargarPendientesTxt);

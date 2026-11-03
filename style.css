@@ -483,8 +483,20 @@ button:disabled {
 .modal-registro-contenido {
     max-height: 92vh;
     overflow-y: auto;
+    overflow-x: hidden;
     text-align: left;
     gap: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: auto;
+    /* Ocultar scrollbar visualmente pero mantener scroll funcional */
+    scrollbar-width: none;        /* Firefox */
+    -ms-overflow-style: none;     /* IE / Edge */
+}
+
+/* Chrome / Safari / Opera */
+.modal-registro-contenido::-webkit-scrollbar {
+    display: none;
 }
 
 .instruccion-registro {
@@ -523,17 +535,29 @@ button:disabled {
 
 .contenedor-scanner-registro {
     width: 100%;
-    background: #000;
-    border-radius: 12px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 8px;
+    background: #000000;
+    border-radius: 14px;
+    /* SIN overflow:hidden — no queremos cortar nada */
+    /* SIN min-height fijo — la librería decide la altura */
+    box-sizing: border-box;
 }
 
 #reader-registro {
     width: 100% !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    /* SIN height ni overflow — html5-qrcode los pone inline */
+}
+
+#reader-registro > div {
+    width: 100% !important;
+}
+
+/* NO tocamos el video — html5-qrcode lo controla con estilos inline */
+
+/* Solo cambiamos el color de las esquinas del marco QR */
+#qr-shaded-region div {
+    border-color: #ffffff !important;
 }
 
 .btn-detener-cam {
@@ -731,6 +755,8 @@ button:disabled {
     justify-content: center;
     z-index: 1000;
     padding: 16px;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .modal-contenido {
@@ -739,10 +765,12 @@ button:disabled {
     border-radius: 20px;
     width: 100%;
     max-width: 440px;
-    padding: 24px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     gap: 16px;
+    box-sizing: border-box;
+    /* Sin overflow:hidden para que el scroll del registro funcione */
 }
 
 .modal-header {

@@ -186,14 +186,20 @@
          ==================================================================== -->
     <div id="modal-registro" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="titulo-registro">
         <div class="modal-contenido modal-registro-contenido">
+
+            <!-- Cabecera fija -->
             <div class="modal-header">
-                <h2 id="titulo-registro">➕ Registrar Cartas Físicas</h2>
+                <h2 id="titulo-registro">➕ Registrar Cartas</h2>
                 <button id="btn-cerrar-registro" class="btn-icono" aria-label="Cerrar">&times;</button>
             </div>
 
-            <p class="instruccion-registro">
-                Escanea los códigos QR de tu baraja física. Se verificarán duplicados automáticamente.
-            </p>
+            <!-- Visor de cámara — ocupa el ancho completo -->
+            <div id="contenedor-scanner-registro" class="contenedor-scanner-registro">
+                <div id="reader-registro"></div>
+            </div>
+
+            <!-- Mensaje de estado del escaneo en vivo -->
+            <div id="alerta-registro" class="alerta-registro oculto"></div>
 
             <!-- Selector de Edición / Versión -->
             <div class="campo-registro">
@@ -207,30 +213,12 @@
                 </select>
             </div>
 
-            <!-- Botón para activar cámara de registro -->
-            <button id="btn-escanear-registro" class="btn-principal">
-                📷 Escanear Carta Nueva
-            </button>
-
-            <!-- Visor de cámara exclusivo para registro -->
-            <div id="contenedor-scanner-registro" class="contenedor-scanner-registro oculto">
-                <div id="reader-registro"></div>
-                <button id="btn-detener-scanner-registro" class="btn-secundario btn-detener-cam">
-                    ⏹️ Detener Cámara
-                </button>
-            </div>
-
-            <!-- Mensaje de estado del escaneo en vivo -->
-            <div id="alerta-registro" class="alerta-registro oculto"></div>
-
             <!-- Resumen de cartas acumuladas -->
             <div class="resumen-pendientes">
                 <div class="resumen-cabecera">
                     <span>Cartas listas para exportar:</span>
                     <strong id="contador-pendientes" class="contador-badge">0</strong>
                 </div>
-
-                <!-- Lista con scroll de cartas escaneadas -->
                 <div id="lista-pendientes" class="lista-pendientes">
                     <p class="texto-vacio">Aún no has escaneado cartas en esta sesión.</p>
                 </div>
@@ -248,6 +236,7 @@
                     🗑️ Vaciar lista acumulada
                 </button>
             </div>
+
         </div>
     </div>
 
