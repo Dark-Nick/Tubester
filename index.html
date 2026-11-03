@@ -26,6 +26,7 @@
         <main id="seccion-menu" class="card-menu">
             <button id="btn-escanear" class="btn-principal">📷 Escanear Carta</button>
             <button id="btn-manual" class="btn-secundario">🔍 Ingresar Código Manual</button>
+            <button id="btn-abrir-registro" class="btn-secundario btn-registro">➕ Registrar Nuevas Cartas</button>
         </main>
 
         <!-- Pantalla del Juego: Modo Ciego y Pantalla de Revelación (Fases 3 y 4) -->
@@ -142,7 +143,7 @@
         </section>
     </div>
 
-    <!-- Modal del Visor de Cámara QR -->
+    <!-- Modal del Visor de Cámara QR (Modo Juego) -->
     <div id="modal-scanner" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="titulo-scanner">
         <div class="modal-contenido">
             <div class="modal-header">
@@ -177,6 +178,76 @@
                     <button type="button" id="btn-cancelar-manual" class="btn-secundario">Cancelar</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- ====================================================================
+         Modal de Registro de Nuevas Cartas Físicas (Herramienta de Digitalización)
+         ==================================================================== -->
+    <div id="modal-registro" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="titulo-registro">
+        <div class="modal-contenido modal-registro-contenido">
+            <div class="modal-header">
+                <h2 id="titulo-registro">➕ Registrar Cartas Físicas</h2>
+                <button id="btn-cerrar-registro" class="btn-icono" aria-label="Cerrar">&times;</button>
+            </div>
+
+            <p class="instruccion-registro">
+                Escanea los códigos QR de tu baraja física. Se verificarán duplicados automáticamente.
+            </p>
+
+            <!-- Selector de Edición / Versión -->
+            <div class="campo-registro">
+                <label for="select-version-registro">Versión / Edición de la carta:</label>
+                <select id="select-version-registro" class="input-select">
+                    <option value="original">Original (Juego Base)</option>
+                    <option value="espanol">Edición en Español</option>
+                    <option value="rock">Expansión Rock</option>
+                    <option value="fiesta">Expansión Fiesta</option>
+                    <option value="personalizada">Personalizada / Otra</option>
+                </select>
+            </div>
+
+            <!-- Botón para activar cámara de registro -->
+            <button id="btn-escanear-registro" class="btn-principal">
+                📷 Escanear Carta Nueva
+            </button>
+
+            <!-- Visor de cámara exclusivo para registro -->
+            <div id="contenedor-scanner-registro" class="contenedor-scanner-registro oculto">
+                <div id="reader-registro"></div>
+                <button id="btn-detener-scanner-registro" class="btn-secundario btn-detener-cam">
+                    ⏹️ Detener Cámara
+                </button>
+            </div>
+
+            <!-- Mensaje de estado del escaneo en vivo -->
+            <div id="alerta-registro" class="alerta-registro oculto"></div>
+
+            <!-- Resumen de cartas acumuladas -->
+            <div class="resumen-pendientes">
+                <div class="resumen-cabecera">
+                    <span>Cartas listas para exportar:</span>
+                    <strong id="contador-pendientes" class="contador-badge">0</strong>
+                </div>
+
+                <!-- Lista con scroll de cartas escaneadas -->
+                <div id="lista-pendientes" class="lista-pendientes">
+                    <p class="texto-vacio">Aún no has escaneado cartas en esta sesión.</p>
+                </div>
+            </div>
+
+            <!-- Acciones de Exportación -->
+            <div class="acciones-exportacion">
+                <button id="btn-copiar-pendientes" class="btn-principal btn-destacado" disabled>
+                    📋 Copiar Lista para Antigravity
+                </button>
+                <button id="btn-descargar-pendientes" class="btn-secundario" disabled>
+                    ⬇️ Descargar .txt
+                </button>
+                <button id="btn-limpiar-pendientes" class="btn-enlace">
+                    🗑️ Vaciar lista acumulada
+                </button>
+            </div>
         </div>
     </div>
 
