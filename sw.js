@@ -1,5 +1,5 @@
-// Service Worker para Hitster YouTube Edition (PWA)
-const CACHE_NAME = 'hitster-v11';
+// Service Worker para TubesTer (PWA)
+const CACHE_NAME = 'tubester-v18';
 
 const ARCHIVOS_CACHE = [
   './',

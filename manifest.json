@@ -1,7 +1,7 @@
 {
-  "name": "Hitster YouTube Edition",
-  "short_name": "Hitster",
-  "description": "Lector de cartas musical para Hitster impulsado por YouTube",
+  "name": "TubesTer",
+  "short_name": "TubesTer",
+  "description": "Juego musical para descubrir canciones y ordenar sus fechas, con reproducción de YouTube",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#121212",

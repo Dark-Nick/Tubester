@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hitster YouTube Edition</title>
+    <title>TubesTer</title>
     <!-- Configuración PWA y Favicon -->
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="icono.svg">
@@ -19,15 +19,66 @@
     <div class="contenedor-principal">
         <!-- Pantalla de Inicio / Menú Principal -->
         <header>
-            <h1>Hitster <span>YouTube</span></h1>
+            <h1><span class="brand-tube">Tube</span><span class="brand-ster">sTer</span><span class="brand-version"><span>ver.</span>1.0.1</span></h1>
             <p>La fiesta sin límites</p>
         </header>
 
         <main id="seccion-menu" class="card-menu">
-            <button id="btn-escanear" class="btn-principal">📷 Escanear Carta</button>
-            <button id="btn-manual" class="btn-secundario">🔍 Ingresar Código Manual</button>
+            <button id="btn-nueva-partida" class="btn-principal">🎮 Nueva partida</button>
             <button id="btn-abrir-registro" class="btn-secundario btn-registro">➕ Registrar Nuevas Cartas</button>
         </main>
+
+        <section id="seccion-configuracion" class="card-configuracion oculto" aria-labelledby="titulo-configuracion">
+            <button id="btn-volver-menu" class="btn-enlace">← Volver al menú</button>
+            <h2 id="titulo-configuracion">Configurar partida</h2>
+
+            <fieldset class="grupo-opciones">
+                <legend>Duración de la canción</legend>
+                <div class="opciones-duracion">
+                    <label class="opcion-radio">
+                        <input type="radio" name="duracion" value="melomano">
+                        <span><strong>Melómano</strong><small>15 segundos</small></span>
+                    </label>
+                    <label class="opcion-radio">
+                        <input type="radio" name="duracion" value="aficionado" checked>
+                        <span><strong>Aficionado</strong><small>30 segundos</small></span>
+                    </label>
+                    <label class="opcion-radio">
+                        <input type="radio" name="duracion" value="amusia">
+                        <span><strong>Amusia</strong><small>60 segundos</small></span>
+                    </label>
+                    <label class="opcion-radio">
+                        <input type="radio" name="duracion" value="chill">
+                        <span><strong>Chill</strong><small>Canción completa</small></span>
+                    </label>
+                </div>
+            </fieldset>
+
+            <fieldset class="grupo-opciones">
+                <legend>Chance</legend>
+                <div class="opciones-segmentadas opciones-chance">
+                    <label class="opcion-segmentada">
+                        <input type="radio" name="chance" value="no" checked>
+                        <span>No</span>
+                    </label>
+                    <label class="opcion-segmentada">
+                        <input type="radio" name="chance" value="1">
+                        <span>1</span>
+                    </label>
+                    <label class="opcion-segmentada">
+                        <input type="radio" name="chance" value="2">
+                        <span>2</span>
+                    </label>
+                    <label class="opcion-segmentada">
+                        <input type="radio" name="chance" value="3">
+                        <span>3</span>
+                    </label>
+                </div>
+            </fieldset>
+
+            <button id="btn-partida-clasica" class="btn-principal btn-destacado">🎴 Partida clásica</button>
+            <button class="btn-secundario" disabled>✨ Partida Tubester (próximamente)</button>
+        </section>
 
         <!-- Pantalla del Juego: Modo Ciego y Pantalla de Revelación (Fases 3 y 4) -->
         <section id="seccion-juego" class="card-pantalla oculto">
@@ -35,6 +86,9 @@
             <div class="cabecera-ciega">
                 <span id="badge-modo-juego" class="badge-modo">🎧 Modo Ciego</span>
                 <span id="indicador-id-carta" class="badge-id-carta">HIT_---</span>
+                <span id="indicador-marca" class="badge-id-carta badge-marca oculto">
+                    <span class="brand-tube">Tube</span><span class="brand-ster">sTer</span>
+                </span>
             </div>
 
             <!-- Contenedor del Reproductor de Video -->
@@ -77,10 +131,12 @@
                 <!-- Controles del Modo Ciego -->
                 <div class="controles-modo-ciego">
                     <button id="btn-play-pause" class="btn-secundario">⏸️ Pausar</button>
-                    <button id="btn-revelar" class="btn-principal btn-destacado">🎉 Revelar Carta</button>
+                    <button id="btn-revelar" class="btn-principal btn-destacado">🎉 Revelar canción</button>
                 </div>
                 
-                <button id="btn-cancelar-juego" class="btn-enlace">← Volver al Menú</button>
+                <button id="btn-cancelar-juego" class="btn-enlace btn-finalizar">
+                    <span>Terminar</span> <span>partida</span>
+                </button>
             </div>
 
             <!-- BLOQUE B: Experiencia de REVELACIÓN Y CONTROLES DUALES (Fase 4) -->
@@ -109,30 +165,33 @@
                     </div>
                 </div>
 
-                <!-- Estado del audio en la revelación -->
-                <p id="estado-revelacion" class="estado-reproduccion">Video revelado</p>
+                <button id="btn-siguiente-carta" class="btn-principal btn-destacado btn-siguiente">
+                    🃏 Siguiente Carta
+                </button>
 
-                <!-- Controles Duales de Reproducción -->
-                <div class="controles-duales">
-                    <button id="btn-reproducir-inicio" class="btn-principal btn-accion-dual">
-                        ▶️ Festejo: Reproducir desde el Inicio (0:00)
+                <div class="controles-duales" aria-label="Controles de reproducción">
+                    <button id="btn-reproducir-inicio" class="btn-secundario btn-accion-dual"
+                        aria-label="Reproducir desde el inicio" title="Reproducir desde el inicio">
+                        ↩️
                     </button>
-                    <button id="btn-continuar-corte" class="btn-secundario btn-accion-dual">
-                        🔀 Continuar desde el corte
+                    <button id="btn-continuar-corte" class="btn-secundario btn-accion-dual"
+                        aria-label="Continuar desde el corte" title="Continuar desde el corte">
+                        🔀
                     </button>
-                    <button id="btn-toggle-video" class="btn-secundario">
-                        ⏸️ Pausar Video
+                    <button id="btn-toggle-video" class="btn-secundario btn-accion-dual"
+                        aria-label="Pausar video" title="Pausar video">
+                        ⏸️
                     </button>
                 </div>
 
-                <!-- Botón para la siguiente ronda -->
-                <button id="btn-siguiente-carta" class="btn-principal btn-destacado btn-siguiente">
-                    🃏 Siguiente Carta
+                <p id="estado-revelacion" class="estado-reproduccion solo-lector">Video revelado</p>
+                <button id="btn-terminar-partida" class="btn-secundario btn-finalizar">
+                    <span>Terminar</span> <span>partida</span>
                 </button>
             </div>
         </section>
 
-        <!-- Panel de Error: Carta no encontrada -->
+        <!-- Panel para cartas no registradas -->
         <section id="seccion-resultado" class="card-resultado oculto">
             <div id="badge-estado" class="badge-estado error">⚠️ No registrada</div>
             <div id="codigo-escaneado" class="badge-codigo">---</div>
@@ -140,6 +199,9 @@
                 La carta con este identificador no existe en la base de datos.
             </p>
             <button id="btn-reintentar" class="btn-secundario">Intentar con otra carta</button>
+            <button id="btn-terminar-sesion" class="btn-secundario btn-finalizar">
+                <span>Terminar</span> <span>sesión</span>
+            </button>
         </section>
     </div>
 
@@ -155,29 +217,10 @@
                 <div id="reader"></div>
             </div>
 
-            <p class="scanner-instrucciones">Apunta la cámara al código QR de la carta de Hitster</p>
+            <p class="scanner-instrucciones">Apunta la cámara al código QR de la carta</p>
             <div id="scanner-error" class="mensaje-error oculto"></div>
             
             <button id="btn-cancelar-scanner" class="btn-secundario">Cancelar</button>
-        </div>
-    </div>
-
-    <!-- Modal de Ingreso Manual -->
-    <div id="modal-manual" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="titulo-manual">
-        <div class="modal-contenido">
-            <div class="modal-header">
-                <h2 id="titulo-manual">Ingreso Manual</h2>
-                <button id="btn-cerrar-manual" class="btn-icono" aria-label="Cerrar">&times;</button>
-            </div>
-
-            <form id="form-manual" class="manual-form">
-                <label for="input-codigo">Identificador de la carta:</label>
-                <input type="text" id="input-codigo" placeholder="Ej: HIT_001 o porta" required autocomplete="off">
-                <div class="modal-acciones">
-                    <button type="submit" class="btn-principal">Iniciar Juego</button>
-                    <button type="button" id="btn-cancelar-manual" class="btn-secundario">Cancelar</button>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -227,7 +270,7 @@
             <!-- Acciones de Exportación -->
             <div class="acciones-exportacion">
                 <button id="btn-copiar-pendientes" class="btn-principal btn-destacado" disabled>
-                    📋 Copiar Lista para Antigravity
+                    📋 Copiar en portapapeles
                 </button>
                 <button id="btn-descargar-pendientes" class="btn-secundario" disabled>
                     ⬇️ Descargar .txt

@@ -1,9 +1,9 @@
 /**
  * ============================================================================
- * Hitster YouTube Edition - Script Principal (app.js)
+ * TubesTer - Script Principal (app.js)
  * ============================================================================
  * 
- * VERSIÓN 1.0.0
+ * VERSIÓN 1.0.1
  * - Modo Ciego (Fase 3): Reproducción anti-spoilers con inicio aleatorio 15%-80%.
  * - Pantalla de Revelación (Fase 4): Video visible, Gran Año y Controles Duales.
  * - Despliegue PWA (Fase 5): Service Worker con Network-First y aceleración móvil.
@@ -22,6 +22,13 @@ const CONFIG_JUEGO = {
     /** Duración en segundos que se reproducirá el fragmento en Modo Ciego */
     duracionFragmentoSegundos: 30,
 
+    /** Reproduce la canción completa cuando la duración seleccionada es Chill */
+    reproducirCancionCompleta: false,
+
+    /** Ajustes de partida que se usarán en los modos correspondientes */
+    chanceActivada: false,
+    cantidadChances: 0,
+
     /** Porcentaje mínimo del track donde puede iniciar el audio (15%) */
     porcentajeMinInicio: 0.15,
 
@@ -38,6 +45,10 @@ const estadoJuego = {
     intervaloTemporizador: null,  // ID del intervalo de la cuenta regresiva
     timestampInicio: 0,           // Segundo en que inició el fragmento a ciegas
     timestampCorte: 0,            // Segundo exacto donde finalizó el fragmento
+    tiempoAgotado: false,         // Evita duplicar la revelación al terminar el audio
+    temporizadorRevelacion: null, // Retraso previo a mostrar la canción revelada
+    youtubeIds: [],               // Videos disponibles para la canción actual
+    indiceYoutubeActual: 0,        // Video de respaldo que se está reproduciendo
     estaReproduciendo: false,     // Estado del reproductor
     reproductorListo: false,      // Indica si la YouTube IFrame API está lista
     saltoRealizado: false         // Evita saltos duplicados en la misma canción
@@ -50,14 +61,17 @@ const estadoJuego = {
 document.addEventListener("DOMContentLoaded", () => {
     // --- Referencias: Menú Principal ---
     const seccionMenu = document.getElementById("seccion-menu");
-    const btnEscanear = document.getElementById("btn-escanear");
-    const btnManual = document.getElementById("btn-manual");
+    const seccionConfiguracion = document.getElementById("seccion-configuracion");
+    const btnNuevaPartida = document.getElementById("btn-nueva-partida");
+    const btnVolverMenu = document.getElementById("btn-volver-menu");
+    const btnPartidaClasica = document.getElementById("btn-partida-clasica");
     const btnAbrirRegistro = document.getElementById("btn-abrir-registro");
 
     // --- Referencias: Tarjeta del Juego ---
     const seccionJuego = document.getElementById("seccion-juego");
     const badgeModoJuego = document.getElementById("badge-modo-juego");
     const indicadorIdCarta = document.getElementById("indicador-id-carta");
+    const indicadorMarca = document.getElementById("indicador-marca");
     const cortinaCiega = document.getElementById("cortina-ciega");
     const ecualizadorOndas = document.querySelector(".ecualizador-ondas");
     const btnForzarPlay = document.getElementById("btn-forzar-play");
@@ -83,23 +97,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnContinuarCorte = document.getElementById("btn-continuar-corte");
     const btnToggleVideo = document.getElementById("btn-toggle-video");
     const btnSiguienteCarta = document.getElementById("btn-siguiente-carta");
+    const btnTerminarPartida = document.getElementById("btn-terminar-partida");
 
     // --- Referencias: Panel de Error ---
     const seccionResultado = document.getElementById("seccion-resultado");
     const codigoEscaneado = document.getElementById("codigo-escaneado");
     const btnReintentar = document.getElementById("btn-reintentar");
+    const btnTerminarSesion = document.getElementById("btn-terminar-sesion");
 
     // --- Referencias: Modales Principales ---
     const modalScanner = document.getElementById("modal-scanner");
     const btnCerrarScanner = document.getElementById("btn-cerrar-scanner");
     const btnCancelarScanner = document.getElementById("btn-cancelar-scanner");
     const scannerError = document.getElementById("scanner-error");
-
-    const modalManual = document.getElementById("modal-manual");
-    const formManual = document.getElementById("form-manual");
-    const inputCodigo = document.getElementById("input-codigo");
-    const btnCerrarManual = document.getElementById("btn-cerrar-manual");
-    const btnCancelarManual = document.getElementById("btn-cancelar-manual");
 
     // --- Referencias: Modal de Registro de Nuevas Cartas (V1.0) ---
     const modalRegistro = document.getElementById("modal-registro");
@@ -125,7 +135,11 @@ document.addEventListener("DOMContentLoaded", () => {
     let bloqueoEscaneoRegistro = false; // Cooldown para no escanear dos veces la misma carta en 1 segundo
 
     // Cartas pendientes acumuladas (persisten en localStorage)
-    let cartasPendientes = JSON.parse(localStorage.getItem("hitster_cartas_pendientes") || "[]");
+    const claveCartasPendientes = "tubester_cartas_pendientes";
+    const cartasPendientesGuardadas = localStorage.getItem(claveCartasPendientes)
+        || localStorage.getItem("hitster_cartas_pendientes")
+        || "[]";
+    let cartasPendientes = JSON.parse(cartasPendientesGuardadas);
 
     // =========================================================================
     // 3. CARGA DE BASE DE DATOS (canciones.json / canciones.js)
@@ -139,7 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function cargarBaseDeDatos() {
         if (Array.isArray(window.CANCIONES_LOCALES) && window.CANCIONES_LOCALES.length > 0) {
             cancionesDB = window.CANCIONES_LOCALES;
-            console.log(`[Hitster] Catálogo local cargado: ${cancionesDB.length} canciones.`);
+            console.log(`[TubesTer] Catálogo local cargado: ${cancionesDB.length} canciones.`);
         }
 
         try {
@@ -148,16 +162,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 const data = await respuesta.json();
                 if (Array.isArray(data) && data.length > 0) {
                     cancionesDB = data;
-                    console.log(`[Hitster] Catálogo sincronizado vía fetch: ${cancionesDB.length} canciones.`);
+                    console.log(`[TubesTer] Catálogo sincronizado vía fetch: ${cancionesDB.length} canciones.`);
                 }
             }
         } catch (error) {
-            console.log("[Hitster] Servidor local / modo archivo activo. Usando canciones.js");
+            console.log("[TubesTer] Servidor local / modo archivo activo. Usando canciones.js");
         }
     }
 
     /**
-     * Busca una canción por ID normalizado o coincidencia en URL
+     * Busca una canción por cualquiera de sus IDs o por coincidencia en URL
      * @param {string} idBuscado - ID ingresado o leído en el QR
      * @returns {Object|null} - Objeto de la canción o null si no existe
      */
@@ -168,13 +182,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const idCompacto = idNormalizado.replace(/[\s\-_]/g, "");
 
         return cancionesDB.find(c => {
-            const idCancion = c.id.trim().toUpperCase();
-            const idCancionCompacto = idCancion.replace(/[\s\-_]/g, "");
+            const idsCancion = Array.isArray(c.ids) ? c.ids : [];
+            const idsNormalizados = idsCancion
+                .filter(id => typeof id === "string")
+                .map(id => id.trim().toUpperCase());
 
-            return idCancion === idNormalizado || 
-                   idCancionCompacto === idCompacto ||
-                   idNormalizado.endsWith("/" + idCancion) || 
-                   idNormalizado.includes(idCancion);
+            return idsNormalizados.includes(idNormalizado) ||
+                   idsNormalizados.some(idCancion => {
+                       const idCancionCompacto = idCancion.replace(/[\s\-_]/g, "");
+                       return idCancionCompacto === idCompacto ||
+                              idNormalizado.endsWith("/" + idCancion) ||
+                              idNormalizado.includes(idCancion);
+                   });
         }) || null;
     }
 
@@ -198,7 +217,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     window.onYouTubeIframeAPIReady = function() {
-        console.log("[Hitster] YouTube IFrame API lista para su uso.");
+        console.log("[TubesTer] YouTube IFrame API lista para su uso.");
         inicializarReproductorYouTube();
     };
 
@@ -227,38 +246,79 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
         } catch (err) {
-            console.error("[Hitster] Error al inicializar YT.Player:", err);
+            console.error("[TubesTer] Error al inicializar YT.Player:", err);
         }
     }
 
     function onPlayerReady() {
-        console.log("[Hitster] Reproductor de YouTube listo y vinculado.");
+        console.log("[TubesTer] Reproductor de YouTube listo y vinculado.");
         estadoJuego.reproductorListo = true;
+        if (estadoJuego.cancionActual && estadoJuego.youtubeIds.length > 0) {
+            reproducirYoutubeActual();
+        }
     }
 
     function onPlayerError(event) {
-        console.error("[Hitster] Error del reproductor YouTube:", event.data);
-        let mensaje = "No se pudo reproducir este video.";
+        console.error("[TubesTer] Error del reproductor YouTube:", event.data);
+        if (pasarAlSiguienteYoutube(event.data)) return;
 
-        switch (event.data) {
-            case 2:
-                mensaje = "Parámetro o ID de video de YouTube inválido.";
-                break;
-            case 5:
-                mensaje = "Error del reproductor HTML5 de YouTube.";
-                break;
-            case 100:
-                mensaje = "El video no existe o es privado.";
-                break;
-            case 101:
-            case 150:
-                mensaje = "⚠️ El propietario del video no permite reproducción embebida externa (Error 150).";
-                break;
+        const mensaje = "No se pudo reproducir la canción. Se agotaron los enlaces de respaldo.";
+        const estadoVisible = bloqueRevelacion.classList.contains("oculto")
+            ? estadoReproduccion
+            : estadoRevelacion;
+        estadoVisible.textContent = mensaje;
+        btnForzarPlay.classList.add("oculto");
+    }
+
+    function pasarAlSiguienteYoutube(codigoError) {
+        const siguienteIndice = estadoJuego.indiceYoutubeActual + 1;
+        if (siguienteIndice >= estadoJuego.youtubeIds.length) return false;
+
+        console.warn(`[TubesTer] Falló el video ${estadoJuego.indiceYoutubeActual + 1}; probando respaldo ${siguienteIndice + 1}.`, codigoError);
+        estadoJuego.indiceYoutubeActual = siguienteIndice;
+        if (!bloqueModoCiego.classList.contains("oculto")) {
+            detenerTemporizador();
+            estadoJuego.saltoRealizado = false;
+        }
+        estadoJuego.estaReproduciendo = false;
+        const estadoVisible = bloqueRevelacion.classList.contains("oculto")
+            ? estadoReproduccion
+            : estadoRevelacion;
+        estadoVisible.textContent = `Video no disponible. Probando respaldo ${siguienteIndice + 1} de ${estadoJuego.youtubeIds.length}...`;
+        reproducirYoutubeActual();
+        return true;
+    }
+
+    function reproducirYoutubeActual() {
+        if (!ytPlayer || !estadoJuego.reproductorListo) return;
+
+        const videoId = estadoJuego.youtubeIds[estadoJuego.indiceYoutubeActual];
+        if (!videoId) {
+            estadoReproduccion.textContent = "No hay enlaces de YouTube válidos para esta canción.";
+            btnForzarPlay.classList.add("oculto");
+            return;
         }
 
-        estadoReproduccion.textContent = mensaje;
-        btnForzarPlay.classList.remove("oculto");
-        btnForzarPlay.textContent = "Intentar reproducir";
+        try {
+            ytPlayer.mute();
+            ytPlayer.loadVideoById({ videoId, startSeconds: 0 });
+            ytPlayer.playVideo();
+            setTimeout(() => {
+                if (estadoJuego.cancionActual && !estadoJuego.estaReproduciendo) {
+                    btnForzarPlay.classList.remove("oculto");
+                    btnForzarPlay.textContent = "▶️ Toca para iniciar audio";
+                }
+            }, 2500);
+        } catch (error) {
+            console.error("[TubesTer] No se pudo cargar un video de YouTube:", error);
+            if (!pasarAlSiguienteYoutube(error)) {
+                const estadoVisible = bloqueRevelacion.classList.contains("oculto")
+                    ? estadoReproduccion
+                    : estadoRevelacion;
+                estadoVisible.textContent = "No se pudo cargar la canción. Se agotaron los enlaces de respaldo.";
+                btnForzarPlay.classList.add("oculto");
+            }
+        }
     }
 
     function extraerVideoId(url) {
@@ -277,7 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const maxInicio = Math.max(minInicio, Math.floor(limiteMaxTrack - CONFIG_JUEGO.duracionFragmentoSegundos));
 
         const inicioAleatorio = Math.floor(minInicio + Math.random() * (maxInicio - minInicio + 1));
-        console.log(`[Hitster] Duración total: ${duracionTotal}s | Rango permitido: [${minInicio}s - ${maxInicio}s] | Elegido: ${inicioAleatorio}s`);
+        console.log(`[TubesTer] Duración total: ${duracionTotal}s | Rango permitido: [${minInicio}s - ${maxInicio}s] | Elegido: ${inicioAleatorio}s`);
         return inicioAleatorio;
     }
 
@@ -304,7 +364,9 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 ecualizadorOndas.classList.add("sonando");
                 if (!bloqueModoCiego.classList.contains("oculto")) {
-                    estadoReproduccion.textContent = "🎧 Reproduciendo fragmento a ciegas...";
+                    estadoReproduccion.textContent = CONFIG_JUEGO.reproducirCancionCompleta
+                        ? "🎧 Reproduciendo canción completa a ciegas..."
+                        : "🎧 Reproduciendo fragmento a ciegas...";
                 }
             }
         } else if (event.data === YT.PlayerState.PAUSED) {
@@ -312,19 +374,24 @@ document.addEventListener("DOMContentLoaded", () => {
             actualizarBotonPlayPause(false);
             actualizarBotonToggleVideo(false);
             ecualizadorOndas.classList.remove("sonando");
-            if (estadoJuego.saltoRealizado && !bloqueModoCiego.classList.contains("oculto")) {
+            if (estadoJuego.saltoRealizado && !estadoJuego.tiempoAgotado && !bloqueModoCiego.classList.contains("oculto")) {
                 estadoReproduccion.textContent = "⏸️ Audio pausado";
             }
         } else if (event.data === YT.PlayerState.BUFFERING) {
             if (!bloqueModoCiego.classList.contains("oculto")) {
                 estadoReproduccion.textContent = "Cargando audio...";
             }
+        } else if (event.data === YT.PlayerState.ENDED && !bloqueModoCiego.classList.contains("oculto")) {
+            detenerTemporizador();
+            tiempoAgotadoModoCiego();
         }
     }
 
     function ejecutarSaltoAleatorioYDesmutear(duracion) {
         estadoJuego.saltoRealizado = true;
-        const puntoInicio = calcularTimestampAleatorio(duracion);
+        const puntoInicio = CONFIG_JUEGO.reproducirCancionCompleta
+            ? 0
+            : calcularTimestampAleatorio(duracion);
         estadoJuego.timestampInicio = puntoInicio;
 
         ytPlayer.seekTo(puntoInicio, true);
@@ -333,8 +400,14 @@ document.addEventListener("DOMContentLoaded", () => {
         ytPlayer.playVideo();
 
         ecualizadorOndas.classList.add("sonando");
-        estadoReproduccion.textContent = "🎧 Reproduciendo fragmento a ciegas...";
-        iniciarTemporizador(CONFIG_JUEGO.duracionFragmentoSegundos);
+        estadoReproduccion.textContent = CONFIG_JUEGO.reproducirCancionCompleta
+            ? "🎧 Reproduciendo canción completa a ciegas..."
+            : "🎧 Reproduciendo fragmento a ciegas...";
+        const duracionDisponible = Math.max(1, duracion - puntoInicio);
+        const duracionReproduccion = CONFIG_JUEGO.reproducirCancionCompleta
+            ? duracionDisponible
+            : Math.min(CONFIG_JUEGO.duracionFragmentoSegundos, duracionDisponible);
+        iniciarTemporizador(duracionReproduccion);
     }
 
     // =========================================================================
@@ -344,10 +417,19 @@ document.addEventListener("DOMContentLoaded", () => {
     function iniciarModoCiego(cancion) {
         estadoJuego.cancionActual = cancion;
         estadoJuego.saltoRealizado = false;
+        estadoJuego.tiempoAgotado = false;
+        if (estadoJuego.temporizadorRevelacion) {
+            clearTimeout(estadoJuego.temporizadorRevelacion);
+            estadoJuego.temporizadorRevelacion = null;
+        }
 
         seccionMenu.classList.add("oculto");
+        seccionConfiguracion.classList.add("oculto");
         seccionResultado.classList.add("oculto");
         seccionJuego.classList.remove("oculto");
+        document.querySelector(".contenedor-principal").classList.remove("revelacion-activa");
+        indicadorMarca.classList.add("oculto");
+        indicadorIdCarta.classList.remove("oculto");
 
         bloqueModoCiego.classList.remove("oculto");
         bloqueRevelacion.classList.add("oculto");
@@ -355,18 +437,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
         badgeModoJuego.textContent = "🎧 Modo Ciego";
         badgeModoJuego.className = "badge-modo";
-        indicadorIdCarta.textContent = cancion.id;
+        indicadorIdCarta.textContent = Array.isArray(cancion.ids) ? cancion.ids[0] : "";
         estadoReproduccion.textContent = "Conectando con YouTube...";
         btnForzarPlay.classList.add("oculto");
         
-        temporizadorSegundos.textContent = `${CONFIG_JUEGO.duracionFragmentoSegundos}s`;
+        temporizadorSegundos.textContent = CONFIG_JUEGO.reproducirCancionCompleta
+            ? "♪"
+            : `${CONFIG_JUEGO.duracionFragmentoSegundos}s`;
         barraProgresoRelleno.style.width = "100%";
+        barraProgresoRelleno.style.backgroundColor = "#1ed760";
         ecualizadorOndas.classList.remove("sonando");
 
-        const videoId = extraerVideoId(cancion.youtube_url);
-        if (!videoId) {
-            alert("Error: El enlace no contiene un ID de video válido de YouTube.");
-            cancelarJuego();
+        const enlacesYoutube = Array.isArray(cancion.youtube_urls) ? cancion.youtube_urls : [];
+        estadoJuego.youtubeIds = enlacesYoutube.map(extraerVideoId).filter(Boolean);
+        estadoJuego.indiceYoutubeActual = 0;
+        if (estadoJuego.youtubeIds.length < enlacesYoutube.length) {
+            console.warn(`[TubesTer] Se omitieron ${enlacesYoutube.length - estadoJuego.youtubeIds.length} enlaces de YouTube inválidos para ${cancion.titulo}.`);
+        }
+        if (estadoJuego.youtubeIds.length === 0) {
+            estadoReproduccion.textContent = "Esta canción no tiene enlaces de YouTube válidos.";
+            btnForzarPlay.classList.add("oculto");
             return;
         }
 
@@ -377,26 +467,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        try {
-            ytPlayer.mute();
-            ytPlayer.loadVideoById({
-                videoId: videoId,
-                startSeconds: 0
-            });
-            ytPlayer.playVideo();
-
-            setTimeout(() => {
-                if (!estadoJuego.estaReproduciendo) {
-                    btnForzarPlay.classList.remove("oculto");
-                    btnForzarPlay.textContent = "▶️ Toca para iniciar audio";
-                }
-            }, 2500);
-
-        } catch (err) {
-            console.error("[Hitster] Error al reproducir video:", err);
-            btnForzarPlay.classList.remove("oculto");
-            estadoReproduccion.textContent = "Toca para intentar reproducir.";
-        }
+        reproducirYoutubeActual();
     }
 
     function iniciarTemporizador(segundosTotales) {
@@ -425,6 +496,11 @@ document.addEventListener("DOMContentLoaded", () => {
         temporizadorSegundos.textContent = `${segEnteros}s`;
         const porcentaje = Math.max(0, Math.min(100, (restante / total) * 100));
         barraProgresoRelleno.style.width = `${porcentaje}%`;
+        const transcurrido = 1 - porcentaje / 100;
+        const rojo = Math.round(30 + (255 - 30) * transcurrido);
+        const verde = Math.round(215 + (59 - 215) * transcurrido);
+        const azul = Math.round(96 + (48 - 96) * transcurrido);
+        barraProgresoRelleno.style.backgroundColor = `rgb(${rojo}, ${verde}, ${azul})`;
     }
 
     function detenerTemporizador() {
@@ -450,16 +526,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function tiempoAgotadoModoCiego() {
-        console.log("[Hitster] Tiempo agotado. Guardando corte.");
+        if (estadoJuego.tiempoAgotado || !estadoJuego.cancionActual) return;
+
+        estadoJuego.tiempoAgotado = true;
+        console.log("[TubesTer] Tiempo agotado. Guardando corte.");
         if (ytPlayer && ytPlayer.getCurrentTime) {
             estadoJuego.timestampCorte = ytPlayer.getCurrentTime();
         }
         if (ytPlayer && ytPlayer.pauseVideo) {
             ytPlayer.pauseVideo();
         }
-        estadoReproduccion.textContent = "⏱️ ¡Tiempo terminado! Momento de revelar la carta.";
+        estadoReproduccion.textContent = "⏱️ ¡Tiempo terminado! Revelando la canción en 2 segundos...";
         ecualizadorOndas.classList.remove("sonando");
-        revelarCarta();
+        estadoJuego.temporizadorRevelacion = setTimeout(() => {
+            estadoJuego.temporizadorRevelacion = null;
+            revelarCarta();
+        }, 2000);
     }
 
     // =========================================================================
@@ -478,13 +560,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function revelarCarta() {
         detenerTemporizador();
-
-        if (ytPlayer && ytPlayer.getCurrentTime) {
-            estadoJuego.timestampCorte = ytPlayer.getCurrentTime();
+        if (estadoJuego.temporizadorRevelacion) {
+            clearTimeout(estadoJuego.temporizadorRevelacion);
+            estadoJuego.temporizadorRevelacion = null;
         }
 
-        if (ytPlayer && ytPlayer.pauseVideo) {
-            ytPlayer.pauseVideo();
+        if (!estadoJuego.tiempoAgotado && ytPlayer && ytPlayer.getCurrentTime) {
+            estadoJuego.timestampCorte = ytPlayer.getCurrentTime();
         }
 
         const cancion = estadoJuego.cancionActual;
@@ -492,24 +574,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Retirar cortina (video visible)
         cortinaCiega.classList.add("oculto");
+        document.querySelector(".contenedor-principal").classList.add("revelacion-activa");
+        indicadorIdCarta.classList.add("oculto");
+        indicadorMarca.classList.remove("oculto");
 
         bloqueModoCiego.classList.add("oculto");
         bloqueRevelacion.classList.remove("oculto");
 
-        badgeModoJuego.textContent = "🎉 Carta Revelada";
+        badgeModoJuego.textContent = "🎉 Canción revelada";
         badgeModoJuego.className = "badge-modo revelado";
 
         const { anio, fechaCompleta } = extraerDatosFecha(cancion.lanzamiento);
         revelacionAno.textContent = anio;
-        revelacionCancion.textContent = cancion.cancion;
+        revelacionCancion.textContent = cancion.titulo;
         revelacionArtista.textContent = cancion.artista;
         revelacionAlbum.textContent = cancion.album || "Sencillo / Desconocido";
         revelacionFecha.textContent = fechaCompleta;
 
-        estadoRevelacion.textContent = "Video revelado. Usa los controles para festejar o continuar.";
-        actualizarBotonToggleVideo(false);
+        estadoRevelacion.textContent = "▶️ Reproduciendo canción desde el inicio.";
+        if (ytPlayer) {
+            ytPlayer.seekTo(0, true);
+            ytPlayer.unMute();
+            ytPlayer.setVolume(100);
+            ytPlayer.playVideo();
+            actualizarBotonToggleVideo(true);
+        } else {
+            estadoRevelacion.textContent = "Usa el botón para iniciar la canción.";
+            actualizarBotonToggleVideo(false);
+        }
 
-        console.log(`[Hitster] Carta revelada: ${cancion.cancion} (${anio}) | Corte: ${Math.floor(estadoJuego.timestampCorte)}s`);
+        console.log(`[TubesTer] Canción revelada: ${cancion.titulo} (${anio}) | Corte: ${Math.floor(estadoJuego.timestampCorte)}s`);
     }
 
     function reproducirDesdeInicio() {
@@ -547,33 +641,68 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function actualizarBotonToggleVideo(reproduciendo) {
-        btnToggleVideo.textContent = reproduciendo ? "⏸️ Pausar Video" : "▶️ Reanudar Video";
+        const accion = reproduciendo ? "Pausar video" : "Reanudar video";
+        btnToggleVideo.textContent = reproduciendo ? "⏸️" : "▶️";
+        btnToggleVideo.setAttribute("aria-label", accion);
+        btnToggleVideo.title = accion;
     }
 
     function siguienteCarta() {
         if (ytPlayer && ytPlayer.stopVideo) {
             ytPlayer.stopVideo();
         }
+        estadoJuego.estaReproduciendo = false;
         detenerTemporizador();
+        if (estadoJuego.temporizadorRevelacion) {
+            clearTimeout(estadoJuego.temporizadorRevelacion);
+            estadoJuego.temporizadorRevelacion = null;
+        }
 
         estadoJuego.cancionActual = null;
         estadoJuego.saltoRealizado = false;
+        estadoJuego.tiempoAgotado = false;
         estadoJuego.timestampCorte = 0;
         estadoJuego.timestampInicio = 0;
+        document.querySelector(".contenedor-principal").classList.remove("revelacion-activa");
+        indicadorMarca.classList.add("oculto");
+        indicadorIdCarta.classList.remove("oculto");
 
-        seccionJuego.classList.add("oculto");
-        cortinaCiega.classList.remove("oculto");
-        bloqueRevelacion.classList.add("oculto");
-        bloqueModoCiego.classList.remove("oculto");
-        seccionMenu.classList.remove("oculto");
+        iniciarScanner();
     }
 
     function cancelarJuego() {
-        siguienteCarta();
+        finalizarPartida();
+    }
+
+    function finalizarPartida() {
+        detenerTemporizador();
+        if (estadoJuego.temporizadorRevelacion) {
+            clearTimeout(estadoJuego.temporizadorRevelacion);
+            estadoJuego.temporizadorRevelacion = null;
+        }
+        if (ytPlayer && ytPlayer.stopVideo) {
+            ytPlayer.stopVideo();
+        }
+
+        estadoJuego.cancionActual = null;
+        estadoJuego.saltoRealizado = false;
+        estadoJuego.tiempoAgotado = false;
+        estadoJuego.timestampCorte = 0;
+        estadoJuego.timestampInicio = 0;
+        seccionJuego.classList.add("oculto");
+        seccionConfiguracion.classList.add("oculto");
+        seccionResultado.classList.add("oculto");
+        seccionMenu.classList.remove("oculto");
+        document.querySelector(".contenedor-principal").classList.remove("revelacion-activa");
+        indicadorMarca.classList.add("oculto");
+        indicadorIdCarta.classList.remove("oculto");
+        cortinaCiega.classList.remove("oculto");
+        bloqueRevelacion.classList.add("oculto");
+        bloqueModoCiego.classList.remove("oculto");
     }
 
     // =========================================================================
-    // 7. PROCESAMIENTO DE CÓDIGOS (QR / MANUAL)
+    // 7. PROCESAMIENTO DE CÓDIGOS QR
     // =========================================================================
 
     function procesarCodigo(rawId) {
@@ -581,10 +710,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const cancion = buscarCancionPorId(id);
 
         if (cancion) {
-            console.log("[Hitster] Carta identificada:", cancion);
+            console.log("[TubesTer] Carta identificada:", cancion);
             iniciarModoCiego(cancion);
         } else {
-            seccionMenu.classList.remove("oculto");
+            seccionConfiguracion.classList.add("oculto");
+            seccionMenu.classList.add("oculto");
             seccionJuego.classList.add("oculto");
             codigoEscaneado.textContent = id;
             seccionResultado.classList.remove("oculto");
@@ -630,7 +760,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             isScanning = true;
         } catch (err) {
-            console.error("[Hitster] Error al iniciar cámara:", err);
+            console.error("[TubesTer] Error al iniciar cámara:", err);
             mostrarErrorScanner(obtenerMensajeError(err));
         }
     }
@@ -640,7 +770,7 @@ document.addEventListener("DOMContentLoaded", () => {
             try {
                 await html5QrCode.stop();
             } catch (err) {
-                console.warn("[Hitster] Error al detener escáner:", err);
+                console.warn("[TubesTer] Error al detener escáner:", err);
             } finally {
                 isScanning = false;
             }
@@ -719,7 +849,7 @@ document.addEventListener("DOMContentLoaded", () => {
      * Guarda la lista de cartas pendientes en localStorage
      */
     function guardarCartasPendientes() {
-        localStorage.setItem("hitster_cartas_pendientes", JSON.stringify(cartasPendientes));
+        localStorage.setItem(claveCartasPendientes, JSON.stringify(cartasPendientes));
         renderizarListaPendientes();
     }
 
@@ -817,7 +947,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (existeEnDB) {
             bloqueoEscaneoRegistro = true;
             if (navigator.vibrate) navigator.vibrate([150, 80, 150]);
-            mostrarAlertaRegistro(`⚠️ Carta YA registrada en la base de datos (${existeEnDB.artista} - ${existeEnDB.cancion})`, "error");
+            mostrarAlertaRegistro(`⚠️ Carta YA registrada en la base de datos (${existeEnDB.artista} - ${existeEnDB.titulo})`, "error");
             setTimeout(() => { bloqueoEscaneoRegistro = false; }, 2000);
             return;
         }
@@ -855,14 +985,14 @@ document.addEventListener("DOMContentLoaded", () => {
      * Genera el texto con el listado de cartas pendientes formateado para Antigravity
      */
     function generarTextoPendientes() {
-        let texto = `=== HITSTER - NUEVAS CARTAS PARA AGREGAR ===\n`;
+        let texto = `=== TUBESTER - NUEVAS CARTAS PARA AGREGAR ===\n`;
         texto += `Total de cartas: ${cartasPendientes.length}\n\n`;
 
         cartasPendientes.forEach((c, i) => {
             texto += `${i + 1}. ID: "${c.id}" | Versión: "${c.version}"\n`;
         });
 
-        texto += `\nInstrucción para Antigravity: "Por favor busca los datos históricos (artista, canción, álbum, lanzamiento) y el enlace oficial de YouTube de cada una y agrégalas a canciones.json"`;
+        texto += `\nInstrucción: "Busca los datos históricos de cada canción y agrégala a canciones.json usando ids (array), titulo, artista, album, lanzamiento, genero y youtube_urls (array con los enlaces de YouTube de respaldo)."`;
         return texto;
     }
 
@@ -898,7 +1028,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
         const enlace = document.createElement("a");
         enlace.href = URL.createObjectURL(blob);
-        enlace.download = `hitster_cartas_pendientes_${Date.now()}.txt`;
+        enlace.download = `tubester_cartas_pendientes_${Date.now()}.txt`;
         enlace.click();
         URL.revokeObjectURL(enlace.href);
         mostrarAlertaRegistro("⬇️ Archivo .txt descargado con éxito.", "exito");
@@ -917,8 +1047,35 @@ document.addEventListener("DOMContentLoaded", () => {
     // 10. ASIGNACIÓN DE EVENTOS DEL DOM
     // =========================================================================
 
-    // Menú principal
-    btnEscanear.addEventListener("click", iniciarScanner);
+    // Menú principal y configuración de partida
+    btnNuevaPartida.addEventListener("click", () => {
+        seccionMenu.classList.add("oculto");
+        seccionResultado.classList.add("oculto");
+        seccionConfiguracion.classList.remove("oculto");
+    });
+    btnVolverMenu.addEventListener("click", () => {
+        seccionConfiguracion.classList.add("oculto");
+        seccionMenu.classList.remove("oculto");
+    });
+    document.querySelectorAll('input[name="duracion"]').forEach((opcion) => {
+        opcion.addEventListener("change", () => {
+            const duraciones = {
+                melomano: 15,
+                aficionado: 30,
+                amusia: 60,
+                chill: null
+            };
+            CONFIG_JUEGO.reproducirCancionCompleta = opcion.value === "chill";
+            CONFIG_JUEGO.duracionFragmentoSegundos = duraciones[opcion.value];
+        });
+    });
+    document.querySelectorAll('input[name="chance"]').forEach((opcion) => {
+        opcion.addEventListener("change", () => {
+            CONFIG_JUEGO.chanceActivada = opcion.value !== "no";
+            CONFIG_JUEGO.cantidadChances = opcion.value === "no" ? 0 : Number(opcion.value);
+        });
+    });
+    btnPartidaClasica.addEventListener("click", iniciarScanner);
     btnCerrarScanner.addEventListener("click", detenerScanner);
     btnCancelarScanner.addEventListener("click", detenerScanner);
 
@@ -940,35 +1097,11 @@ document.addEventListener("DOMContentLoaded", () => {
     btnContinuarCorte.addEventListener("click", continuarDesdeCorte);
     btnToggleVideo.addEventListener("click", toggleVideoRevelado);
     btnSiguienteCarta.addEventListener("click", siguienteCarta);
+    btnTerminarPartida.addEventListener("click", finalizarPartida);
 
     // Panel de error
-    btnReintentar.addEventListener("click", () => {
-        seccionResultado.classList.add("oculto");
-        seccionMenu.classList.remove("oculto");
-    });
-
-    // Modal de ingreso manual
-    btnManual.addEventListener("click", () => {
-        inputCodigo.value = "";
-        modalManual.classList.remove("oculto");
-        inputCodigo.focus();
-    });
-
-    const cerrarModalManual = () => {
-        modalManual.classList.add("oculto");
-    };
-
-    btnCerrarManual.addEventListener("click", cerrarModalManual);
-    btnCancelarManual.addEventListener("click", cerrarModalManual);
-
-    formManual.addEventListener("submit", (e) => {
-        e.preventDefault();
-        const codigo = inputCodigo.value.trim();
-        if (codigo) {
-            cerrarModalManual();
-            procesarCodigo(codigo);
-        }
-    });
+    btnReintentar.addEventListener("click", iniciarScanner);
+    btnTerminarSesion.addEventListener("click", finalizarPartida);
 
     // Modal de Registro de Nuevas Cartas (V1.0)
     // La cámara arranca automáticamente al abrir el modal
@@ -993,7 +1126,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") {
             if (!modalScanner.classList.contains("oculto")) detenerScanner();
-            if (!modalManual.classList.contains("oculto")) cerrarModalManual();
             if (!modalRegistro.classList.contains("oculto")) cerrarModalRegistro();
         }
     });
@@ -1007,7 +1139,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Registro del Service Worker para funcionamiento como Progressive Web App (PWA)
     if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
         navigator.serviceWorker.register('./sw.js')
-            .then(() => console.log('[Hitster] PWA Service Worker registrado con éxito.'))
-            .catch(err => console.log('[Hitster] Error al registrar Service Worker:', err));
+            .then(() => console.log('[TubesTer] PWA Service Worker registrado con éxito.'))
+            .catch(err => console.log('[TubesTer] Error al registrar Service Worker:', err));
     }
 });
