@@ -19,7 +19,7 @@
     <div class="contenedor-principal">
         <!-- Pantalla de Inicio / Menú Principal -->
         <header>
-            <h1><span class="brand-tube">Tube</span><span class="brand-ster">sTer</span><span class="brand-version"><span>ver.</span>1.0.1</span></h1>
+            <h1><span class="brand-tube">Tube</span><span class="brand-ster">sTer</span><span class="brand-version"><span>ver.</span>1.0.2</span></h1>
             <p>La fiesta sin límites</p>
         </header>
 
@@ -254,6 +254,16 @@
                     <option value="fiesta">Expansión Fiesta</option>
                     <option value="personalizada">Personalizada / Otra</option>
                 </select>
+            </div>
+
+            <div class="campo-registro">
+                <label for="input-referencia-carta">Nombre de la canción o referencia:</label>
+                <input type="text" id="input-referencia-carta" class="input-select"
+                    placeholder="Escribe el nombre o una referencia" disabled>
+            </div>
+            <div class="acciones-carta-registro">
+                <button type="button" id="btn-cancelar-carta" class="btn-secundario" disabled>Cancelar</button>
+                <button type="button" id="btn-agregar-carta" class="btn-principal btn-destacado" disabled>Agregar carta</button>
             </div>
 
             <!-- Resumen de cartas acumuladas -->

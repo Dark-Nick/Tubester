@@ -3,12 +3,12 @@
  * TubesTer - Script Principal (app.js)
  * ============================================================================
  * 
- * VERSIÓN 1.0.1
+ * VERSIÓN 1.0.2
  * - Modo Ciego (Fase 3): Reproducción anti-spoilers con inicio aleatorio 15%-80%.
  * - Pantalla de Revelación (Fase 4): Video visible, Gran Año y Controles Duales.
  * - Despliegue PWA (Fase 5): Service Worker con Network-First y aceleración móvil.
- * - Herramienta de Registro (V1.0): Escaneo continuo de cartas físicas con
- *   filtro de duplicados, persistencia en localStorage y exportación en 1 clic.
+ * - Herramienta de Registro (V1.0.2): Captura guiada de cartas físicas con
+ *   referencia, filtro de duplicados, persistencia y exportación.
  */
 
 // ============================================================================
@@ -115,6 +115,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const modalRegistro = document.getElementById("modal-registro");
     const btnCerrarRegistro = document.getElementById("btn-cerrar-registro");
     const selectVersionRegistro = document.getElementById("select-version-registro");
+    const inputReferenciaCarta = document.getElementById("input-referencia-carta");
+    const btnCancelarCarta = document.getElementById("btn-cancelar-carta");
+    const btnAgregarCarta = document.getElementById("btn-agregar-carta");
     const contenedorScannerRegistro = document.getElementById("contenedor-scanner-registro");
     const alertaRegistro = document.getElementById("alerta-registro");
     const contadorPendientes = document.getElementById("contador-pendientes");
@@ -132,7 +135,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // Variables del escáner de registro continuo
     let html5QrCodeRegistro = null;
     let isScanningRegistro = false;
-    let bloqueoEscaneoRegistro = false; // Cooldown para no escanear dos veces la misma carta en 1 segundo
+    let bloqueoEscaneoRegistro = false;
+    let codigoCartaEscaneada = null;
 
     // Cartas pendientes acumuladas (persisten en localStorage)
     const claveCartasPendientes = "tubester_cartas_pendientes";
@@ -826,13 +830,25 @@ document.addEventListener("DOMContentLoaded", () => {
         cartasPendientes.forEach((carta, index) => {
             const item = document.createElement("div");
             item.className = "item-pendiente";
-            item.innerHTML = `
-                <div>
-                    <span class="item-id">${carta.id}</span>
-                    <span class="item-version">${carta.version}</span>
-                </div>
-                <button class="btn-eliminar-item" data-index="${index}" title="Eliminar">&times;</button>
-            `;
+            const detalles = document.createElement("div");
+            const id = document.createElement("span");
+            id.className = "item-id";
+            id.textContent = carta.id;
+            const version = document.createElement("span");
+            version.className = "item-version";
+            version.textContent = carta.version;
+            const referencia = document.createElement("span");
+            referencia.className = "item-referencia";
+            referencia.textContent = carta.referencia || "Sin referencia";
+            detalles.append(id, version, referencia);
+
+            const eliminar = document.createElement("button");
+            eliminar.className = "btn-eliminar-item";
+            eliminar.dataset.index = String(index);
+            eliminar.title = "Eliminar";
+            eliminar.setAttribute("aria-label", `Eliminar carta ${carta.id}`);
+            eliminar.textContent = "×";
+            item.append(detalles, eliminar);
             listaPendientes.appendChild(item);
         });
 
@@ -876,13 +892,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
-     * Inicia el escáner continuo de registro de cartas físicas
+     * Inicia o reanuda el escáner de registro de cartas físicas
      */
     async function iniciarScannerRegistro() {
         if (typeof Html5Qrcode === "undefined") {
             alert("Error: La librería html5-qrcode no se pudo cargar.");
             return;
         }
+        if (isScanningRegistro) return;
 
         // Si la cámara del juego principal estaba activa, la detenemos
         if (html5QrCode && isScanning) {
@@ -890,6 +907,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         contenedorScannerRegistro.classList.remove("oculto");
+        bloqueoEscaneoRegistro = false;
+        mostrarAlertaRegistro("📷 Iniciando cámara...", "aviso");
 
         try {
             if (!html5QrCodeRegistro) {
@@ -905,16 +924,33 @@ document.addEventListener("DOMContentLoaded", () => {
             await html5QrCodeRegistro.start(
                 { facingMode: "environment" },
                 config,
-                onScanRegistroSuccess,
+                (decodedText) => onScanRegistroSuccess(decodedText),
                 () => {}
             );
-
             isScanningRegistro = true;
+            mostrarAlertaRegistro("📷 Cámara lista. Centra el código QR dentro del recuadro.", "aviso");
         } catch (err) {
             console.error("[Registro] Error al iniciar cámara:", err);
-            mostrarAlertaRegistro("No fue posible acceder a la cámara.", "error");
-            detenerScannerRegistro();
+            mostrarAlertaRegistro(obtenerMensajeErrorScannerRegistro(err), "error");
+            await detenerScannerRegistro();
         }
+    }
+
+    function obtenerMensajeErrorScannerRegistro(error) {
+        const nombreError = error && error.name ? error.name : "";
+        if (nombreError === "NotAllowedError" || nombreError === "PermissionDeniedError") {
+            return "Permiso de cámara denegado. Habilita la cámara para este sitio en el navegador.";
+        }
+        if (nombreError === "NotFoundError" || nombreError === "DevicesNotFoundError") {
+            return "No se encontró una cámara disponible en este dispositivo.";
+        }
+        if (nombreError === "NotReadableError" || nombreError === "TrackStartError") {
+            return "La cámara está ocupada por otra aplicación. Ciérrala e inténtalo de nuevo.";
+        }
+        if (nombreError === "OverconstrainedError") {
+            return "No se encontró una cámara compatible. Prueba con otra cámara del dispositivo.";
+        }
+        return "No fue posible iniciar la cámara. Revisa los permisos y que el sitio use HTTPS o localhost.";
     }
 
     /**
@@ -933,6 +969,15 @@ document.addEventListener("DOMContentLoaded", () => {
         contenedorScannerRegistro.classList.add("oculto");
     }
 
+    function actualizarFormularioCartaEscaneada(habilitado) {
+        inputReferenciaCarta.disabled = !habilitado;
+        btnCancelarCarta.disabled = !habilitado;
+        btnAgregarCarta.disabled = !habilitado;
+        if (!habilitado) {
+            inputReferenciaCarta.value = "";
+        }
+    }
+
     /**
      * Callback cuando la cámara de registro lee un código QR
      */
@@ -940,59 +985,107 @@ document.addEventListener("DOMContentLoaded", () => {
         if (bloqueoEscaneoRegistro) return;
 
         const idLeido = decodedText.trim();
-        const versionSeleccionada = selectVersionRegistro.value;
+        if (!idLeido) return;
+        bloqueoEscaneoRegistro = true;
+        detenerScannerRegistro();
+        if (modalRegistro.classList.contains("oculto")) return;
 
         // 1. Validar si ya existe en la base de datos oficial (canciones.json / canciones.js)
         const existeEnDB = buscarCancionPorId(idLeido);
         if (existeEnDB) {
-            bloqueoEscaneoRegistro = true;
             if (navigator.vibrate) navigator.vibrate([150, 80, 150]);
             mostrarAlertaRegistro(`⚠️ Carta YA registrada en la base de datos (${existeEnDB.artista} - ${existeEnDB.titulo})`, "error");
-            setTimeout(() => { bloqueoEscaneoRegistro = false; }, 2000);
+            setTimeout(() => {
+                if (!modalRegistro.classList.contains("oculto")) iniciarScannerRegistro();
+            }, 2000);
             return;
         }
 
         // 2. Validar si ya se escaneó en la sesión actual
         const yaEnPendientes = cartasPendientes.some(c => c.id.toUpperCase() === idLeido.toUpperCase());
         if (yaEnPendientes) {
-            bloqueoEscaneoRegistro = true;
             if (navigator.vibrate) navigator.vibrate(120);
             mostrarAlertaRegistro(`ℹ️ Ya habías escaneado esta carta hace un momento (${idLeido})`, "aviso");
-            setTimeout(() => { bloqueoEscaneoRegistro = false; }, 2000);
+            setTimeout(() => {
+                if (!modalRegistro.classList.contains("oculto")) iniciarScannerRegistro();
+            }, 2000);
             return;
         }
 
-        // 3. Carta 100% Nueva: Agregar a pendientes
-        bloqueoEscaneoRegistro = true;
+        // Pausa el escaneo hasta que se agregue o descarte la carta.
+        codigoCartaEscaneada = idLeido;
         if (navigator.vibrate) navigator.vibrate([80, 50, 80]);
+        actualizarFormularioCartaEscaneada(true);
+        inputReferenciaCarta.focus();
+        mostrarAlertaRegistro(`📝 Carta ${idLeido} escaneada. Escribe su nombre o referencia.`, "aviso");
+    }
 
+    async function cancelarCartaEscaneada() {
+        if (!codigoCartaEscaneada) return;
+        codigoCartaEscaneada = null;
+        actualizarFormularioCartaEscaneada(false);
+        mostrarAlertaRegistro("Escaneo cancelado. Puedes escanear otra carta.", "aviso");
+        await iniciarScannerRegistro();
+    }
+
+    async function agregarCartaEscaneada() {
+        if (!codigoCartaEscaneada) return;
+        const referencia = inputReferenciaCarta.value.trim();
+        if (!referencia) {
+            mostrarAlertaRegistro("Escribe el nombre de la canción o una referencia antes de agregar.", "error");
+            inputReferenciaCarta.focus();
+            return;
+        }
+
+        const idLeido = codigoCartaEscaneada;
         cartasPendientes.push({
             id: idLeido,
-            version: versionSeleccionada,
+            version: selectVersionRegistro.value,
+            referencia,
             fecha: new Date().toLocaleDateString()
         });
 
         guardarCartasPendientes();
-        mostrarAlertaRegistro(`✅ ¡Carta nueva detectada! (${idLeido})`, "exito");
-
-        // Cooldown de 1.8 segundos antes de escanear la siguiente carta de la baraja
-        setTimeout(() => {
-            bloqueoEscaneoRegistro = false;
-        }, 1800);
+        codigoCartaEscaneada = null;
+        actualizarFormularioCartaEscaneada(false);
+        mostrarAlertaRegistro(`✅ Carta ${idLeido} agregada a la lista. Escaneando la siguiente...`, "exito");
+        await iniciarScannerRegistro();
     }
 
     /**
-     * Genera el texto con el listado de cartas pendientes formateado para Antigravity
+     * Genera el listado de cartas pendientes con instrucciones para completar el catálogo.
      */
     function generarTextoPendientes() {
         let texto = `=== TUBESTER - NUEVAS CARTAS PARA AGREGAR ===\n`;
         texto += `Total de cartas: ${cartasPendientes.length}\n\n`;
 
         cartasPendientes.forEach((c, i) => {
-            texto += `${i + 1}. ID: "${c.id}" | Versión: "${c.version}"\n`;
+            texto += `${i + 1}. ID: "${c.id}" | Versión: "${c.version}" | Nombre / referencia: "${c.referencia || ""}"\n`;
         });
 
-        texto += `\nInstrucción: "Busca los datos históricos de cada canción y agrégala a canciones.json usando ids (array), titulo, artista, album, lanzamiento, genero y youtube_urls (array con los enlaces de YouTube de respaldo)."`;
+        texto += `
+INSTRUCCIONES PARA COMPLETAR EL CATÁLOGO:
+Investiga cada canción de la lista usando su nombre o referencia como pista. Verifica los datos con fuentes confiables y no inventes información. Para cada canción, busca:
+- El artista original.
+- El título original, con su ortografía oficial.
+- El álbum al que pertenece.
+- La fecha de lanzamiento en formato AAAA-MM-DD.
+- El género musical.
+- Uno o más enlaces válidos a videos de YouTube de esa canción; colócalos en youtube_urls, que debe ser un array.
+
+Genera un archivo .txt independiente por cada canción. Cada archivo debe contener un único objeto JSON, sin comentarios ni texto adicional, con exactamente la estructura y el orden de propiedades usados por canciones.json:
+{
+  "ids": ["ID leído del QR de esta entrada"],
+  "version": "versión elegida para esta entrada",
+  "artista": "artista original",
+  "titulo": "título original de la canción",
+  "album": "álbum",
+  "lanzamiento": "AAAA-MM-DD",
+  "genero": "género musical",
+  "youtube_urls": ["https://www.youtube.com/watch?v=..."]
+}
+
+Para cada objeto, coloca el ID indicado en la lista como primer dato dentro del array ids y la versión indicada como segundo atributo, version. Usa el nombre o referencia únicamente para identificar e investigar la canción; el título final debe ser el título original verificado. Mantén los nombres y el orden de las propiedades tal como aparecen en el ejemplo. Entrega los archivos .txt por separado, uno por canción, listos para revisar y copiar a canciones.json.`;
         return texto;
     }
 
@@ -1106,17 +1199,24 @@ document.addEventListener("DOMContentLoaded", () => {
     // Modal de Registro de Nuevas Cartas (V1.0)
     // La cámara arranca automáticamente al abrir el modal
     btnAbrirRegistro.addEventListener("click", () => {
+        codigoCartaEscaneada = null;
+        actualizarFormularioCartaEscaneada(false);
         modalRegistro.classList.remove("oculto");
         renderizarListaPendientes();
         iniciarScannerRegistro();
     });
 
     const cerrarModalRegistro = async () => {
+        codigoCartaEscaneada = null;
+        bloqueoEscaneoRegistro = true;
+        actualizarFormularioCartaEscaneada(false);
         await detenerScannerRegistro();
         modalRegistro.classList.add("oculto");
     };
 
     btnCerrarRegistro.addEventListener("click", cerrarModalRegistro);
+    btnCancelarCarta.addEventListener("click", cancelarCartaEscaneada);
+    btnAgregarCarta.addEventListener("click", agregarCartaEscaneada);
 
     btnCopiarPendientes.addEventListener("click", copiarPendientesAlPortapapeles);
     btnDescargarPendientes.addEventListener("click", descargarPendientesTxt);

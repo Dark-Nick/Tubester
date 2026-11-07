@@ -1,4 +1,4 @@
-# 🎵 TubesTer v1.0.1
+# 🎵 TubesTer v1.0.2
 
 > **Nota importante:** Este proyecto es una versión pensada para utilizarse como plataforma de música basada en YouTube, **sin ánimo de lucro**, con el objetivo principal de ayudar y servir de alternativa a aquellas personas que no dispongan de Spotify.
 
@@ -33,6 +33,12 @@ El catálogo usa `ids` para asociar varias cartas físicas a una canción y `you
 * **CSS (~24.1%):** Estilos personalizados, diseño responsivo y atractiva interfaz de usuario[cite: 1].
 * **HTML (~15.9%):** Estructura base de la aplicación[cite: 1].
 * **PWA:** Configuración mediante Service Worker (`sw.js`) y `manifest.json`[cite: 1].
+
+## Cambios de la versión 1.0.2
+- El registro de cartas ahora se pausa después de cada escaneo y permite ingresar el nombre o referencia antes de agregar la carta a la lista.
+- Los botones **Cancelar** y **Agregar carta** permiten descartar el escaneo actual o guardarlo y continuar con la siguiente carta.
+- La lista copiada o descargada incluye instrucciones para investigar cada canción y generar un archivo `.txt` independiente con un objeto JSON compatible con el catálogo, usando el ID escaneado, la versión elegida y los datos verificados de la canción.
+- En la pantalla de canción revelada, los indicadores de estado y marca mantienen su alineación en una sola fila en móviles con un tamaño de texto ajustado.
 
 ## 📁 Estructura del Repositorio
 * `index.html` - Página principal de la interfaz[cite: 1].

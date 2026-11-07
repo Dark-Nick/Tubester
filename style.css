@@ -673,6 +673,22 @@ button:disabled {
     border: 0;
 }
 
+@media (max-width: 480px) {
+    .cabecera-ciega {
+        flex-wrap: nowrap;
+        gap: 8px;
+    }
+
+    .badge-modo.revelado {
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    .badge-marca {
+        white-space: nowrap;
+    }
+}
+
 @media (max-height: 700px) {
     .contenedor-principal.revelacion-activa {
         padding-top: 10px;
@@ -744,6 +760,21 @@ button:disabled {
 
 .input-select:focus {
     border-color: var(--accent-color);
+}
+
+.input-select:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.acciones-carta-registro {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.acciones-carta-registro button {
+    padding: 12px 8px;
 }
 
 .contenedor-scanner-registro {
@@ -862,6 +893,14 @@ button:disabled {
     font-size: 13px;
 }
 
+.item-pendiente > div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
 .item-id {
     font-family: monospace;
     font-weight: 700;
@@ -874,6 +913,11 @@ button:disabled {
     padding: 2px 8px;
     border-radius: 4px;
     color: var(--text-secondary);
+}
+
+.item-referencia {
+    color: var(--text-secondary);
+    overflow-wrap: anywhere;
 }
 
 .btn-eliminar-item {

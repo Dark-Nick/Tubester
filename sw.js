@@ -1,5 +1,5 @@
 // Service Worker para TubesTer (PWA)
-const CACHE_NAME = 'tubester-v18';
+const CACHE_NAME = 'tubester-v23';
 
 const ARCHIVOS_CACHE = [
   './',
