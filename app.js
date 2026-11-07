@@ -1071,9 +1071,9 @@ Investiga cada canción de la lista usando su nombre o referencia como pista. Ve
 - El álbum al que pertenece.
 - La fecha de lanzamiento en formato AAAA-MM-DD.
 - El género musical.
-- Uno o más enlaces válidos a videos de YouTube de esa canción; colócalos en youtube_urls, que debe ser un array.
+- Uno o dos enlaces válidos a videos de YouTube de esa canción; colócalos en youtube_urls, que debe ser un array.
 
-Genera un archivo .txt independiente por cada canción. Cada archivo debe contener un único objeto JSON, sin comentarios ni texto adicional, con exactamente la estructura y el orden de propiedades usados por canciones.json:
+Genera un archivo .txt con todas las canciones. El archivo debe contener por cada cancion un bloque como el especificado, sin comentarios ni texto adicional, con exactamente la estructura y el orden de propiedades usados:
 {
   "ids": ["ID leído del QR de esta entrada"],
   "version": "versión elegida para esta entrada",
@@ -1085,7 +1085,7 @@ Genera un archivo .txt independiente por cada canción. Cada archivo debe conten
   "youtube_urls": ["https://www.youtube.com/watch?v=..."]
 }
 
-Para cada objeto, coloca el ID indicado en la lista como primer dato dentro del array ids y la versión indicada como segundo atributo, version. Usa el nombre o referencia únicamente para identificar e investigar la canción; el título final debe ser el título original verificado. Mantén los nombres y el orden de las propiedades tal como aparecen en el ejemplo. Entrega los archivos .txt por separado, uno por canción, listos para revisar y copiar a canciones.json.`;
+Para cada objeto, coloca el ID indicado en la lista como primer dato dentro del array ids y la versión indicada como segundo atributo, version. Usa el nombre o referencia únicamente para identificar e investigar la canción; el título final debe ser el título original verificado. Mantén los nombres y el orden de las propiedades tal como aparecen en el ejemplo. Entrega el archivo .txt.`;
         return texto;
     }
 
