@@ -1,5 +1,5 @@
 // Service Worker para TubesTer (PWA)
-const CACHE_NAME = 'tubester-v23';
+const CACHE_NAME = 'tubester-v24';
 
 const ARCHIVOS_CACHE = [
   './',
@@ -9,7 +9,8 @@ const ARCHIVOS_CACHE = [
   './canciones.js',
   './canciones.json',
   './manifest.json',
-  './icono.svg'
+  './icono.svg',
+  './logo-tubester.png'
 ];
 
 // Instalación: precarga inmediata de los archivos básicos
