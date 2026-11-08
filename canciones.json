@@ -79,5 +79,593 @@
     "lanzamiento": "2020-03-27",
     "genero": "Dance-pop",
     "youtube_urls": ["https://www.youtube.com/watch?v=TUVcZfQe-Kw"]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00308"
+    ],
+    "version": "original",
+    "artista": "Mumford & Sons",
+    "titulo": "I Will Wait",
+    "album": "Babel",
+    "lanzamiento": "2012-08-27",
+    "genero": "Folk rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=rGKfrgqWcv0"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00307"
+    ],
+    "version": "original",
+    "artista": "Cream",
+    "titulo": "White Room",
+    "album": "Wheels of Fire",
+    "lanzamiento": "1968-09-01",
+    "genero": "Psychedelic rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=pkae0-TgrRU"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00306"
+    ],
+    "version": "original",
+    "artista": "Lynyrd Skynyrd",
+    "titulo": "Sweet Home Alabama",
+    "album": "Second Helping",
+    "lanzamiento": "1974-06-24",
+    "genero": "Southern rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=ye5BuFIXYl4"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00305"
+    ],
+    "version": "original",
+    "artista": "Simon & Garfunkel",
+    "titulo": "Bridge over Troubled Water",
+    "album": "Bridge over Troubled Water",
+    "lanzamiento": "1970-01-26",
+    "genero": "Soft rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=H_a4sw6OxGU"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00304"
+    ],
+    "version": "original",
+    "artista": "Aerosmith",
+    "titulo": "Walk This Way",
+    "album": "Toys in the Attic",
+    "lanzamiento": "1975-08-28",
+    "genero": "Hard rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=4iCYkttZpSU"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00303"
+    ],
+    "version": "original",
+    "artista": "The Champs",
+    "titulo": "Tequila",
+    "album": "Go! Champs! Go!",
+    "lanzamiento": "1958-01-01",
+    "genero": "Instrumental rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=3HNhgnugAkk"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00302"
+    ],
+    "version": "original",
+    "artista": "The Mamas & the Papas",
+    "titulo": "Monday, Monday",
+    "album": "If You Can Believe Your Eyes and Ears",
+    "lanzamiento": "1966-03-28",
+    "genero": "Folk pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=h81Ojd3d2rY"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00301"
+    ],
+    "version": "original",
+    "artista": "The Weeknd",
+    "titulo": "Blinding Lights",
+    "album": "After Hours",
+    "lanzamiento": "2019-11-29",
+    "genero": "Synth-pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=4NRXx6U8ABQ"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00300"
+    ],
+    "version": "original",
+    "artista": "AC/DC",
+    "titulo": "You Shook Me All Night Long",
+    "album": "Back in Black",
+    "lanzamiento": "1980-08-11",
+    "genero": "Hard rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=Lo2qQmj0_FY"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00299"
+    ],
+    "version": "original",
+    "artista": "Missy Elliott",
+    "titulo": "Work It",
+    "album": "Under Construction",
+    "lanzamiento": "2002-09-16",
+    "genero": "Hip hop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=UpoUPuImw6M"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00298"
+    ],
+    "version": "original",
+    "artista": "Commodores",
+    "titulo": "Easy",
+    "album": "Commodores",
+    "lanzamiento": "1977-03-15",
+    "genero": "Soul",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=BF2USxW-d7k"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00297"
+    ],
+    "version": "original",
+    "artista": "Three Dog Night",
+    "titulo": "Joy to the World",
+    "album": "Naturally",
+    "lanzamiento": "1970-11-01",
+    "genero": "Rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=q6g4yXl_vG0"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00296"
+    ],
+    "version": "original",
+    "artista": "Fergie feat. Ludacris",
+    "titulo": "Glamorous",
+    "album": "The Dutchess",
+    "lanzamiento": "2007-02-20",
+    "genero": "Pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=qNGqeLsuuNI"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00295"
+    ],
+    "version": "original",
+    "artista": "Jan & Dean",
+    "titulo": "Surf City",
+    "album": "Surf City",
+    "lanzamiento": "1963-05-20",
+    "genero": "Surf rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=F3zCkVfXh7o"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00294"
+    ],
+    "version": "original",
+    "artista": "Miley Cyrus",
+    "titulo": "Wrecking Ball",
+    "album": "Bangerz",
+    "lanzamiento": "2013-08-25",
+    "genero": "Pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=My2FRPA3Gf8"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00293"
+    ],
+    "version": "original",
+    "artista": "Trampled by Turtles",
+    "titulo": "Wait So Long",
+    "album": "Palomino",
+    "lanzamiento": "2010-04-13",
+    "genero": "Bluegrass",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=XFuPYwXvhrU"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00292"
+    ],
+    "version": "original",
+    "artista": "Doja Cat",
+    "titulo": "Say So",
+    "album": "Hot Pink",
+    "lanzamiento": "2019-11-07",
+    "genero": "Pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=pok8H_KF1FA"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00291"
+    ],
+    "version": "original",
+    "artista": "Tones and I",
+    "titulo": "Dance Monkey",
+    "album": "The Kids Are Coming",
+    "lanzamiento": "2019-05-10",
+    "genero": "Electropop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=q0hyYWKXF0Q"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00290"
+    ],
+    "version": "original",
+    "artista": "Russell Dickerson feat. Jake Scott",
+    "titulo": "She Likes It",
+    "album": "She Likes It",
+    "lanzamiento": "2021-07-30",
+    "genero": "Country",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=3n524gJ8d7Y"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00289"
+    ],
+    "version": "original",
+    "artista": "Meat Loaf",
+    "titulo": "Paradise by the Dashboard Light",
+    "album": "Bat Out of Hell",
+    "lanzamiento": "1977-10-21",
+    "genero": "Rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=9fAZmpHSdkk"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00288"
+    ],
+    "version": "original",
+    "artista": "Culture Beat",
+    "titulo": "Mr. Vain",
+    "album": "Serenity",
+    "lanzamiento": "1993-04-05",
+    "genero": "Eurodance",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=mfWkX_QTZGE"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00287"
+    ],
+    "version": "original",
+    "artista": "Lady Gaga",
+    "titulo": "Poker Face",
+    "album": "The Fame",
+    "lanzamiento": "2008-09-26",
+    "genero": "Synth-pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=bESGLojNYSo"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00286"
+    ],
+    "version": "original",
+    "artista": "Chic",
+    "titulo": "Le Freak",
+    "album": "C'est Chic",
+    "lanzamiento": "1978-09-21",
+    "genero": "Disco",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=hO2wA0Te0wM"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00309"
+    ],
+    "version": "original",
+    "artista": "John Legend",
+    "titulo": "All of Me",
+    "album": "Love in the Future",
+    "lanzamiento": "2013-08-12",
+    "genero": "R&B",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=450p7goxZqg"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00284"
+    ],
+    "version": "original",
+    "artista": "Looking Glass",
+    "titulo": "Brandy (You're a Fine Girl)",
+    "album": "Looking Glass",
+    "lanzamiento": "1972-05-01",
+    "genero": "Soft rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=DV5zriopBhM"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00283"
+    ],
+    "version": "original",
+    "artista": "Lewis Capaldi",
+    "titulo": "Someone You Loved",
+    "album": "Divinely Uninspired to a Hellish Extent",
+    "lanzamiento": "2018-11-08",
+    "genero": "Pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=bCuhuePIacY"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00282"
+    ],
+    "version": "original",
+    "artista": "Post Malone feat. Doja Cat",
+    "titulo": "I Like You (A Happier Song)",
+    "album": "Twelve Carat Toothache",
+    "lanzamiento": "2022-06-03",
+    "genero": "Pop rap",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=Z216J_K_A4E"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00281"
+    ],
+    "version": "original",
+    "artista": "David Bowie",
+    "titulo": "Life on Mars?",
+    "album": "Hunky Dory",
+    "lanzamiento": "1971-12-17",
+    "genero": "Art rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=AZKcl4-tcuo"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00280"
+    ],
+    "version": "original",
+    "artista": "Hot Chocolate",
+    "titulo": "You Sexy Thing",
+    "album": "Hot Chocolate",
+    "lanzamiento": "1975-10-24",
+    "genero": "Soul",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=uK1WHzz_0r8"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00279"
+    ],
+    "version": "original",
+    "artista": "Golden Earring",
+    "titulo": "Radar Love",
+    "album": "Moontan",
+    "lanzamiento": "1973-07-27",
+    "genero": "Hard rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=ZOWm7EOz2Es"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00278"
+    ],
+    "version": "original",
+    "artista": "Kay Starr",
+    "titulo": "Wheel of Fortune",
+    "album": "Single",
+    "lanzamiento": "1952-02-01",
+    "genero": "Traditional pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=Gk7Fw9J8w4g"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00277"
+    ],
+    "version": "original",
+    "artista": "Kelly Clarkson",
+    "titulo": "Because of You",
+    "album": "Breakaway",
+    "lanzamiento": "2004-11-30",
+    "genero": "Pop rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=EvuL5jyCHOw"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00276"
+    ],
+    "version": "original",
+    "artista": "Frankie Valli & The Four Seasons",
+    "titulo": "December, 1963 (Oh, What a Night)",
+    "album": "Who Loves You",
+    "lanzamiento": "1975-12-01",
+    "genero": "Pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=nDtp1xq649g"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00275"
+    ],
+    "version": "original",
+    "artista": "ABBA",
+    "titulo": "Take a Chance on Me",
+    "album": "The Album",
+    "lanzamiento": "1977-12-12",
+    "genero": "Pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=-crgQGdpYS0"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00274"
+    ],
+    "version": "original",
+    "artista": "The Archies",
+    "titulo": "Sugar, Sugar",
+    "album": "Everything's Archies",
+    "lanzamiento": "1969-05-24",
+    "genero": "Bubblegum pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=Jm10nIQVv7Y"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00273"
+    ],
+    "version": "original",
+    "artista": "Dolly Parton",
+    "titulo": "Jolene",
+    "album": "Jolene",
+    "lanzamiento": "1973-10-15",
+    "genero": "Country",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=Ixrje2rXLMA"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00272"
+    ],
+    "version": "original",
+    "artista": "Toni Basil",
+    "titulo": "Mickey",
+    "album": "Word of Mouth",
+    "lanzamiento": "1982-03-01",
+    "genero": "New wave",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=NW7HPiwZuqA"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00271"
+    ],
+    "version": "original",
+    "artista": "Soulja Boy",
+    "titulo": "Crank That (Soulja Boy)",
+    "album": "SouljaBoyTellem.com",
+    "lanzamiento": "2007-05-02",
+    "genero": "Hip hop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=8ULeJsFBIdE"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00270"
+    ],
+    "version": "original",
+    "artista": "Neil Diamond",
+    "titulo": "Girl, You'll Be a Woman Soon",
+    "album": "Just for You",
+    "lanzamiento": "1967-07-01",
+    "genero": "Pop rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=wXhXbC3I7i8"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00269"
+    ],
+    "version": "original",
+    "artista": "The Byrds",
+    "titulo": "Mr. Tambourine Man",
+    "album": "Mr. Tambourine Man",
+    "lanzamiento": "1965-04-12",
+    "genero": "Folk rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=uqtWgeXwwLQ"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00268"
+    ],
+    "version": "original",
+    "artista": "Megan Thee Stallion",
+    "titulo": "Savage",
+    "album": "Suga",
+    "lanzamiento": "2020-03-06",
+    "genero": "Hip hop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=g9A0gN6dC7k"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00267"
+    ],
+    "version": "original",
+    "artista": "The White Stripes",
+    "titulo": "Seven Nation Army",
+    "album": "Elephant",
+    "lanzamiento": "2003-03-07",
+    "genero": "Garage rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=0J2QdDbelmY"
+    ]
   }
 ]
