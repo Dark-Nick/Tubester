@@ -1085,7 +1085,8 @@ Genera un archivo .txt con todas las canciones. El archivo debe contener por cad
   "youtube_urls": ["https://www.youtube.com/watch?v=..."]
 }
 
-Para cada objeto, coloca el ID indicado en la lista como primer dato dentro del array ids y la versión indicada como segundo atributo, version. Usa el nombre o referencia únicamente para identificar e investigar la canción; el título final debe ser el título original verificado. Mantén los nombres y el orden de las propiedades tal como aparecen en el ejemplo. Entrega el archivo .txt.`;
+Para cada objeto, coloca el ID indicado en la lista como primer dato dentro del array ids y la versión indicada como segundo atributo, version. Usa el nombre o referencia únicamente para identificar e investigar la canción; el título final debe ser el título original verificado. Mantén los nombres y el orden de las propiedades tal como aparecen en el ejemplo. Entrega el archivo .txt.
+Para cada canción busca en YouTube el enlace oficial. Asegúrate de que provenga del canal oficial, verifica que el enlace sea real y que permita la inserción (embed). Devuélveme únicamente la URL limpia y lista para embeber; de lo contrario, busca una alternativa válida.`;
         return texto;
     }
 

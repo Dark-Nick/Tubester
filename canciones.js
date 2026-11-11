@@ -1,6 +1,6 @@
 // TubesTer - Datos locales de canciones (permite funcionamiento directo con doble clic sin servidor)
 window.CANCIONES_LOCALES = [
-  {
+{
     "ids": ["HIT_001"],
     "version": "original",
     "artista": "Queen",
@@ -41,14 +41,15 @@ window.CANCIONES_LOCALES = [
     "youtube_urls": ["https://www.youtube.com/watch?v=hTWKbfoikeg"]
   },
   {
-    "ids": ["HIT_005","porta"],
+    "ids": ["HIT_005", "porta"],
     "version": "original",
     "artista": "The Killers",
     "titulo": "Mr. Brightside",
     "album": "Hot Fuss",
     "lanzamiento": "2003-09-29",
     "genero": "Rock alternativo",
-    "youtube_urls": ["https://youtu.be/gGdGFtwCNBE?list=RDgGdGFtwCNBE"]
+    "youtube_urls": ["https://www.youtube.com/watch?v=gGdGFtwCN0k",
+                  "https://youtu.be/gGdGFtwCNBE?list=RDgGdGFtwCNBE"]
   },
   {
     "ids": ["HIT_006"],
@@ -105,7 +106,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1968-09-01",
     "genero": "Psychedelic rock",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=pkae0-TgrRU"
+      "https://www.youtube.com/watch?v=njV0yqFR36E"
     ]
   },
   {
@@ -119,7 +120,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1974-06-24",
     "genero": "Southern rock",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=ye5BuFIXYl4"
+      "https://www.youtube.com/watch?v=-p8GXZcdrIk"
     ]
   },
   {
@@ -133,7 +134,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1970-01-26",
     "genero": "Soft rock",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=H_a4sw6OxGU"
+      "https://www.youtube.com/watch?v=4G-YQA_bsOU"
     ]
   },
   {
@@ -147,7 +148,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1975-08-28",
     "genero": "Hard rock",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=4iCYkttZpSU"
+      "https://www.youtube.com/watch?v=4c8O2n1Gfto"
     ]
   },
   {
@@ -161,7 +162,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1958-01-01",
     "genero": "Instrumental rock",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=3HNhgnugAkk"
+      "https://www.youtube.com/watch?v=4hswHOEQfj8"
     ]
   },
   {
@@ -203,7 +204,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1980-08-11",
     "genero": "Hard rock",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=Lo2qQmj0_FY"
+      "https://www.youtube.com/watch?v=Lo2qQmj0_h4"
     ]
   },
   {
@@ -217,7 +218,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "2002-09-16",
     "genero": "Hip hop",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=UpoUPuImw6M"
+      "https://www.youtube.com/watch?v=cjIvu7e6Wq8"
     ]
   },
   {
@@ -231,7 +232,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1977-03-15",
     "genero": "Soul",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=BF2USxW-d7k"
+      "https://www.youtube.com/watch?v=9nBSd1U18vM"
     ]
   },
   {
@@ -245,7 +246,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1970-11-01",
     "genero": "Rock",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=q6g4yXl_vG0"
+      "https://www.youtube.com/watch?v=EVcpKjXYa5c"
     ]
   },
   {
@@ -259,7 +260,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "2007-02-20",
     "genero": "Pop",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=qNGqeLsuuNI"
+      "https://www.youtube.com/watch?v=q0SyUgw98tE"
     ]
   },
   {
@@ -273,7 +274,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1963-05-20",
     "genero": "Surf rock",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=F3zCkVfXh7o"
+      "https://www.youtube.com/watch?v=ERrwjR4ZlfI"
     ]
   },
   {
@@ -301,7 +302,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "2010-04-13",
     "genero": "Bluegrass",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=XFuPYwXvhrU"
+      "https://www.youtube.com/watch?v=vGh-EvmZVCQ"
     ]
   },
   {
@@ -343,7 +344,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "2021-07-30",
     "genero": "Country",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=3n524gJ8d7Y"
+      "https://www.youtube.com/watch?v=adj9x1nBKDA"
     ]
   },
   {
@@ -357,7 +358,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1977-10-21",
     "genero": "Rock",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=9fAZmpHSdkk"
+      "https://www.youtube.com/watch?v=f2DmOzThfPQ"
     ]
   },
   {
@@ -371,7 +372,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1993-04-05",
     "genero": "Eurodance",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=mfWkX_QTZGE"
+      "https://www.youtube.com/watch?v=ZMtf_ouMTHw"
     ]
   },
   {
@@ -399,7 +400,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1978-09-21",
     "genero": "Disco",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=hO2wA0Te0wM"
+      "https://www.youtube.com/watch?v=aXgSHL7efKg"
     ]
   },
   {
@@ -427,7 +428,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1972-05-01",
     "genero": "Soft rock",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=DV5zriopBhM"
+      "https://www.youtube.com/watch?v=DVx8L7a3MuE"
     ]
   },
   {
@@ -441,7 +442,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "2018-11-08",
     "genero": "Pop",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=bCuhuePIacY"
+      "https://www.youtube.com/watch?v=zABLecsR5UE"
     ]
   },
   {
@@ -455,7 +456,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "2022-06-03",
     "genero": "Pop rap",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=Z216J_K_A4E"
+      "https://www.youtube.com/watch?v=_a0T5qwxANg"
     ]
   },
   {
@@ -483,7 +484,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1975-10-24",
     "genero": "Soul",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=uK1WHzz_0r8"
+      "https://www.youtube.com/watch?v=4DwEni2N_-A"
     ]
   },
   {
@@ -497,7 +498,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1973-07-27",
     "genero": "Hard rock",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=ZOWm7EOz2Es"
+      "https://www.youtube.com/watch?v=aRlSHG5hRY4"
     ]
   },
   {
@@ -511,7 +512,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1952-02-01",
     "genero": "Traditional pop",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=Gk7Fw9J8w4g"
+      "https://www.youtube.com/watch?v=OeIce5NsWKk"
     ]
   },
   {
@@ -525,7 +526,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "2004-11-30",
     "genero": "Pop rock",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=EvuL5jyCHOw"
+      "https://www.youtube.com/watch?v=Ra-Om7UMSJc"
     ]
   },
   {
@@ -539,7 +540,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1975-12-01",
     "genero": "Pop",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=nDtp1xq649g"
+      "https://www.youtube.com/watch?v=mTUhnIY3oRM"
     ]
   },
   {
@@ -553,7 +554,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1977-12-12",
     "genero": "Pop",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=-crgQGdpYS0"
+      "https://www.youtube.com/watch?v=-crgQGdpZR0"
     ]
   },
   {
@@ -567,7 +568,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1969-05-24",
     "genero": "Bubblegum pop",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=Jm10nIQVv7Y"
+      "https://www.youtube.com/watch?v=j3plj_Xplus"
     ]
   },
   {
@@ -595,7 +596,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1982-03-01",
     "genero": "New wave",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=NW7HPiwZuqA"
+      "https://www.youtube.com/watch?v=3E-Zrg9CB_Q"
     ]
   },
   {
@@ -609,7 +610,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "2007-05-02",
     "genero": "Hip hop",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=8ULeJsFBIdE"
+      "https://www.youtube.com/watch?v=8UFIYGkROII"
     ]
   },
   {
@@ -623,7 +624,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1967-07-01",
     "genero": "Pop rock",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=wXhXbC3I7i8"
+      "https://www.youtube.com/watch?v=R-TE0Jk1ZeY"
     ]
   },
   {
@@ -637,7 +638,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "1965-04-12",
     "genero": "Folk rock",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=uqtWgeXwwLQ"
+      "https://www.youtube.com/watch?v=Swqw5a8I4b4"
     ]
   },
   {
@@ -651,7 +652,7 @@ window.CANCIONES_LOCALES = [
     "lanzamiento": "2020-03-06",
     "genero": "Hip hop",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=g9A0gN6dC7k"
+      "https://www.youtube.com/watch?v=lEIqjoO0-Bs"
     ]
   },
   {
