@@ -1,6 +1,6 @@
 [
   {
-    "ids": ["HIT_001"],
+    "ids": ["y0low"],
     "version": "original",
     "artista": "Queen",
     "titulo": "I Want To Break Free",
@@ -175,7 +175,7 @@
     "lanzamiento": "1966-03-28",
     "genero": "Folk pop",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=h81Ojd3d2rY"
+      "https://www.youtube.com/watch?v=sWGh92O9kxU"
     ]
   },
   {
@@ -256,7 +256,7 @@
     "artista": "Fergie feat. Ludacris",
     "titulo": "Glamorous",
     "album": "The Dutchess",
-    "lanzamiento": "2007-02-20",
+    "lanzamiento": "2007-01-23",
     "genero": "Pop",
     "youtube_urls": [
       "https://www.youtube.com/watch?v=q0SyUgw98tE"
@@ -595,7 +595,7 @@
     "lanzamiento": "1982-03-01",
     "genero": "New wave",
     "youtube_urls": [
-      "https://www.youtube.com/watch?v=3E-Zrg9CB_Q"
+      "https://www.youtube.com/watch?v=0aqLwHP4y6Q "
     ]
   },
   {
@@ -666,6 +666,496 @@
     "genero": "Garage rock",
     "youtube_urls": [
       "https://www.youtube.com/watch?v=0J2QdDbelmY"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00239"
+    ],
+    "version": "original",
+    "artista": "New Radicals",
+    "titulo": "You Get What You Give",
+    "album": "Maybe You've Been Brainwashed Too",
+    "lanzamiento": "1998-11-10",
+    "genero": "Alternative rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=DL7-CKirWZE"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00238"
+    ],
+    "version": "original",
+    "artista": "Jim Croce",
+    "titulo": "Bad, Bad Leroy Brown",
+    "album": "Life and Times",
+    "lanzamiento": "1973-03-01",
+    "genero": "Folk rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=JzYf6qskdfA"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00237"
+    ],
+    "version": "original",
+    "artista": "Journey",
+    "titulo": "Don't Stop Believin'",
+    "album": "Escape",
+    "lanzamiento": "1981-07-30",
+    "genero": "Arena rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=VcjzHMhBtf0"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00236"
+    ],
+    "version": "original",
+    "artista": "Lorde",
+    "titulo": "Royals",
+    "album": "Pure Heroine",
+    "lanzamiento": "2013-03-08",
+    "genero": "Art pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=nlcIKh6sBtc"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00235"
+    ],
+    "version": "original",
+    "artista": "Pink Floyd",
+    "titulo": "Another Brick in the Wall, Part 2",
+    "album": "The Wall",
+    "lanzamiento": "1979-11-30",
+    "genero": "Progressive rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=HrxX9TBj2zY"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00248"
+    ],
+    "version": "original",
+    "artista": "Dion",
+    "titulo": "The Wanderer",
+    "album": "Runaround Sue",
+    "lanzamiento": "1961-10-01",
+    "genero": "Rock and roll",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=SbYa7NBYyRc"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00247"
+    ],
+    "version": "original",
+    "artista": "Chris Stapleton",
+    "titulo": "You Should Probably Leave",
+    "album": "Starting Over",
+    "lanzamiento": "2020-11-13",
+    "genero": "Country",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=8e7S8l4s1OM"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00246"
+    ],
+    "version": "original",
+    "artista": "Gnarls Barkley",
+    "titulo": "Crazy",
+    "album": "St. Elsewhere",
+    "lanzamiento": "2006-03-13",
+    "genero": "Neo soul",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=-N4jf6rtyuw"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00245"
+    ],
+    "version": "original",
+    "artista": "Bill Haley & His Comets",
+    "titulo": "Rock Around the Clock",
+    "album": "Rock Around the Clock",
+    "lanzamiento": "1954-05-20",
+    "genero": "Rock and roll",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=xbYiGR0YAAk"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00244"
+    ],
+    "version": "original",
+    "artista": "Beyoncé feat. Jay-Z",
+    "titulo": "Crazy in Love",
+    "album": "Dangerously in Love",
+    "lanzamiento": "2003-05-18",
+    "genero": "R&B",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=ViwtNLUqkMY"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00243"
+    ],
+    "version": "original",
+    "artista": "Yazoo",
+    "titulo": "Don't Go",
+    "album": "Upstairs at Eric's",
+    "lanzamiento": "1982-07-05",
+    "genero": "Synth-pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=_sQGwDeambg"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00242"
+    ],
+    "version": "original",
+    "artista": "Alicia Keys",
+    "titulo": "No One",
+    "album": "As I Am",
+    "lanzamiento": "2007-09-11",
+    "genero": "R&B",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=rywUS-ohqeE"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00241"
+    ],
+    "version": "original",
+    "artista": "Sir Mix-a-Lot",
+    "titulo": "Baby Got Back",
+    "album": "Mack Daddy",
+    "lanzamiento": "1992-05-05",
+    "genero": "Hip hop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=X53ZSxkQ3Ho"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00240"
+    ],
+    "version": "original",
+    "artista": "The Beach Boys",
+    "titulo": "Surfin' U.S.A.",
+    "album": "Surfin' U.S.A.",
+    "lanzamiento": "1963-03-04",
+    "genero": "Surf rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=enlOHxQ0tb4"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00263"
+    ],
+    "version": "original",
+    "artista": "Alicia Keys",
+    "titulo": "Fallin'",
+    "album": "Songs in A Minor",
+    "lanzamiento": "2001-04-02",
+    "genero": "R&B",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=Urdlvw0SSEc"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00262"
+    ],
+    "version": "original",
+    "artista": "Wet Wet Wet",
+    "titulo": "Love Is All Around",
+    "album": "End of Part One: Their Greatest Hits",
+    "lanzamiento": "1994-05-16",
+    "genero": "Soft rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=h3gEkwhdXUE"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00261"
+    ],
+    "version": "original",
+    "artista": "Ray Charles",
+    "titulo": "I Got a Woman",
+    "album": "Ray Charles",
+    "lanzamiento": "1954-11-01",
+    "genero": "Soul",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=-fLl7Fj580E"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00260"
+    ],
+    "version": "original",
+    "artista": "The Beatles",
+    "titulo": "Let It Be",
+    "album": "Let It Be",
+    "lanzamiento": "1970-03-06",
+    "genero": "Rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=QDYfEBY9NM4"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00259"
+    ],
+    "version": "original",
+    "artista": "Justin Timberlake feat. Timbaland",
+    "titulo": "SexyBack",
+    "album": "FutureSex/LoveSounds",
+    "lanzamiento": "2006-07-18",
+    "genero": "Dance-pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=3gOHvDP_vCs"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00258"
+    ],
+    "version": "original",
+    "artista": "Daryl Hall & John Oates",
+    "titulo": "Maneater",
+    "album": "H2O",
+    "lanzamiento": "1982-10-04",
+    "genero": "Pop rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=yRYFKcMa_Ek"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00257"
+    ],
+    "version": "original",
+    "artista": "Harry Styles",
+    "titulo": "Adore You",
+    "album": "Fine Line",
+    "lanzamiento": "2019-12-06",
+    "genero": "Pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=VF-r5TtlT9w"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00256"
+    ],
+    "version": "original",
+    "artista": "Soundgarden",
+    "titulo": "Black Hole Sun",
+    "album": "Superunknown",
+    "lanzamiento": "1994-05-17",
+    "genero": "Grunge",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=3mbBbFH9fAg"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00255"
+    ],
+    "version": "original",
+    "artista": "The Doors",
+    "titulo": "Light My Fire",
+    "album": "The Doors",
+    "lanzamiento": "1967-04-24",
+    "genero": "Psychedelic rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=qoX6AKuYWL8"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00254"
+    ],
+    "version": "original",
+    "artista": "Justin Bieber",
+    "titulo": "Anyone",
+    "album": "Justice",
+    "lanzamiento": "2021-01-01",
+    "genero": "Pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=KIK3azN4w34"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00253"
+    ],
+    "version": "original",
+    "artista": "Harry Styles",
+    "titulo": "As It Was",
+    "album": "Harry's House",
+    "lanzamiento": "2022-04-01",
+    "genero": "Synth-pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=H5v3kku4y6Q"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00252"
+    ],
+    "version": "original",
+    "artista": "Crowded House",
+    "titulo": "Don't Dream It's Over",
+    "album": "Crowded House",
+    "lanzamiento": "1986-10-20",
+    "genero": "New wave",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=J9gKyRmic20"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00251"
+    ],
+    "version": "original",
+    "artista": "Nelly feat. Kelly Rowland",
+    "titulo": "Dilemma",
+    "album": "Nellyville",
+    "lanzamiento": "2002-06-25",
+    "genero": "R&B",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=8WYHDfJDPDc"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00250"
+    ],
+    "version": "original",
+    "artista": "Enya",
+    "titulo": "Orinoco Flow",
+    "album": "Watermark",
+    "lanzamiento": "1988-10-15",
+    "genero": "New-age",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=LTrk4X9ACtw"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00249"
+    ],
+    "version": "original",
+    "artista": "Daft Punk",
+    "titulo": "One More Time",
+    "album": "Discovery",
+    "lanzamiento": "2000-11-30",
+    "genero": "House",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=FGBhQbmPwH8"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00234"
+    ],
+    "version": "original",
+    "artista": "Jimmy Eat World",
+    "titulo": "The Middle",
+    "album": "Bleed American",
+    "lanzamiento": "2001-10-29",
+    "genero": "Alternative rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=oKsxPW6i3pM"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00232"
+    ],
+    "version": "original",
+    "artista": "Duffy",
+    "titulo": "Mercy",
+    "album": "Rockferry",
+    "lanzamiento": "2008-02-11",
+    "genero": "Soul",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=y7ZEVA5dy-Y"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00233"
+    ],
+    "version": "original",
+    "artista": "Rick James",
+    "titulo": "Super Freak",
+    "album": "Street Songs",
+    "lanzamiento": "1981-04-23",
+    "genero": "Funk",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=QYHxGBH6o4M"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00266"
+    ],
+    "version": "original",
+    "artista": "Lily Allen",
+    "titulo": "Smile",
+    "album": "Alright, Still",
+    "lanzamiento": "2006-07-03",
+    "genero": "Pop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=0WxDrVUrSvI"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00265"
+    ],
+    "version": "original",
+    "artista": "Prince",
+    "titulo": "Purple Rain",
+    "album": "Purple Rain",
+    "lanzamiento": "1984-09-26",
+    "genero": "Pop rock",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=uW1UIDYmYyI"
+    ]
+  },
+  {
+    "ids": [
+      "www.hitstergame.com/us/aaaa0023/00264"
+    ],
+    "version": "original",
+    "artista": "The Black Eyed Peas",
+    "titulo": "Where Is the Love?",
+    "album": "Elephunk",
+    "lanzamiento": "2003-05-15",
+    "genero": "Hip hop",
+    "youtube_urls": [
+      "https://www.youtube.com/watch?v=WpYeekQkAdc"
     ]
   }
 ]

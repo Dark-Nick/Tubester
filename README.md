@@ -1,4 +1,4 @@
-# 🎵 TubesTer v1.0.2
+# 🎵 TubesTer v1.0.3
 
 > **Nota importante:** Este proyecto es una versión pensada para utilizarse como plataforma de música basada en YouTube, **sin ánimo de lucro**, con el objetivo principal de ayudar y servir de alternativa a aquellas personas que no dispongan de Spotify.
 
@@ -7,7 +7,7 @@
 ## 🚀 Descripción del Proyecto y cambios de esta versión
 **TubesTer** es una aplicación web diseñada para jugar con amigos, adivinar canciones, ordenar temas musicales cronológicamente y disfrutar de la música de forma lúdica directamente desde el navegador. Al estar desarrollada como una **PWA (Progressive Web App)**, ofrece un rendimiento fluido y una experiencia excelente.
 
-Al iniciar una partida clásica puedes elegir entre fragmentos de **15, 30 o 60 segundos**, o escuchar la canción completa en modo **Chill**. También puedes configurar **Chance** como No o elegir entre 1 y 3 oportunidades. Al terminar el fragmento, la canción se revela después de una breve pausa y vuelve a reproducirse desde el inicio.
+Al iniciar una partida clásica puedes elegir entre fragmentos de **15, 30 o 60 segundos**, o escuchar la canción completa en modo **Chill**. También puedes elegir si la canción comienza inmediatamente, tras una cuenta regresiva o al pulsar un botón. Al terminar el fragmento, la canción se revela después de una breve pausa y vuelve a reproducirse desde el inicio.
 
 El visualizador de audio es una animación decorativa; no analiza directamente el sonido del reproductor de YouTube.
 
@@ -34,11 +34,10 @@ El catálogo usa `ids` para asociar varias cartas físicas a una canción y `you
 * **HTML (~15.9%):** Estructura base de la aplicación[cite: 1].
 * **PWA:** Configuración mediante Service Worker (`sw.js`) y `manifest.json`[cite: 1].
 
-## Cambios de la versión 1.0.2
-- El registro de cartas ahora se pausa después de cada escaneo y permite ingresar el nombre o referencia antes de agregar la carta a la lista.
-- Los botones **Cancelar** y **Agregar carta** permiten descartar el escaneo actual o guardarlo y continuar con la siguiente carta.
-- La lista copiada o descargada incluye instrucciones para investigar cada canción y generar un archivo `.txt` independiente con un objeto JSON compatible con el catálogo, usando el ID escaneado, la versión elegida y los datos verificados de la canción.
-- En la pantalla de canción revelada, los indicadores de estado y marca mantienen su alineación en una sola fila en móviles con un tamaño de texto ajustado.
+## Cambios de la versión 1.0.3
+- Se reemplazó la configuración de Chance por un temporizador de inicio: **No**, **3s**, **2s** y **Click**, con una descripción de la opción seleccionada.
+- Se añadió inicio inmediato, cuenta regresiva previa a la reproducción o inicio manual mediante un botón grande.
+- En el modo ciego, el identificador de la carta muestra únicamente sus últimos cinco caracteres.
 
 ## 📁 Estructura del Repositorio
 * `index.html` - Página principal de la interfaz[cite: 1].

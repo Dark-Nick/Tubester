@@ -99,6 +99,7 @@ header p {
     border-radius: 18px;
 }
 
+/* Panel de configuración y selectores de partida */
 .card-configuracion {
     padding: 22px;
     background-color: var(--card-bg);
@@ -195,8 +196,16 @@ header p {
     gap: 9px;
 }
 
-.opciones-chance {
+/* Las cuatro opciones del temporizador se mantienen en una sola fila. */
+.opciones-temporizador-inicio {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.ayuda-temporizador-inicio {
+    margin: 8px 0 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    text-align: center;
 }
 
 .opcion-segmentada > span {
@@ -443,10 +452,20 @@ button:disabled {
 }
 
 .btn-forzar-play {
-    width: auto;
-    padding: 10px 18px;
-    font-size: 14px;
+    width: min(86%, 280px);
+    padding: 14px 18px;
+    font-size: 17px;
     margin-top: 4px;
+}
+
+.contador-inicio {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 56px;
+    font-weight: 800;
+    font-family: monospace;
+    line-height: 1;
+    text-shadow: 0 0 18px rgba(29, 185, 84, 0.55);
 }
 
 /* Ecualizador Animado */
@@ -682,6 +701,7 @@ button:disabled {
     border: 0;
 }
 
+/* Ajustes compactos para la cabecera de revelación y el logo en teléfonos. */
 @media (max-width: 480px) {
     .logo-inicio {
         width: 96px;

@@ -3,11 +3,12 @@
  * TubesTer - Script Principal (app.js)
  * ============================================================================
  * 
- * VERSIÓN 1.0.2
+ * VERSIÓN 1.0.3
  * - Modo Ciego (Fase 3): Reproducción anti-spoilers con inicio aleatorio 15%-80%.
  * - Pantalla de Revelación (Fase 4): Video visible, Gran Año y Controles Duales.
  * - Despliegue PWA (Fase 5): Service Worker con Network-First y aceleración móvil.
- * - Herramienta de Registro (V1.0.2): Captura guiada de cartas físicas con
+ * - Temporizador de inicio de partida: inicio inmediato, cuenta regresiva o por clic.
+ * - Herramienta de Registro: Captura guiada de cartas físicas con
  *   referencia, filtro de duplicados, persistencia y exportación.
  */
 
@@ -25,9 +26,8 @@ const CONFIG_JUEGO = {
     /** Reproduce la canción completa cuando la duración seleccionada es Chill */
     reproducirCancionCompleta: false,
 
-    /** Ajustes de partida que se usarán en los modos correspondientes */
-    chanceActivada: false,
-    cantidadChances: 0,
+    /** Inicio de la canción: inmediato, con cuenta regresiva de 2/3s o por clic */
+    temporizadorInicio: "no",
 
     /** Porcentaje mínimo del track donde puede iniciar el audio (15%) */
     porcentajeMinInicio: 0.15,
@@ -47,6 +47,8 @@ const estadoJuego = {
     timestampCorte: 0,            // Segundo exacto donde finalizó el fragmento
     tiempoAgotado: false,         // Evita duplicar la revelación al terminar el audio
     temporizadorRevelacion: null, // Retraso previo a mostrar la canción revelada
+    temporizadorInicio: null,     // Temporizador de cuenta regresiva antes de reproducir
+    inicioReproduccionSolicitado: false, // Indica que ya se autorizó el inicio de la canción
     youtubeIds: [],               // Videos disponibles para la canción actual
     indiceYoutubeActual: 0,        // Video de respaldo que se está reproduciendo
     estaReproduciendo: false,     // Estado del reproductor
@@ -58,6 +60,9 @@ const estadoJuego = {
 // 2. INICIALIZACIÓN DE LA APLICACIÓN AL CARGAR EL DOM
 // ============================================================================
 
+/**
+ * Conecta los elementos de la interfaz con la lógica del juego y del registro.
+ */
 document.addEventListener("DOMContentLoaded", () => {
     // --- Referencias: Menú Principal ---
     const seccionMenu = document.getElementById("seccion-menu");
@@ -74,7 +79,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const indicadorMarca = document.getElementById("indicador-marca");
     const cortinaCiega = document.getElementById("cortina-ciega");
     const ecualizadorOndas = document.querySelector(".ecualizador-ondas");
+    const textoCortina = document.getElementById("texto-cortina");
+    const contadorInicio = document.getElementById("contador-inicio");
     const btnForzarPlay = document.getElementById("btn-forzar-play");
+    const ayudaTemporizadorInicio = document.getElementById("ayuda-temporizador-inicio");
 
     // --- Referencias: Bloque Modo Ciego (Fase 3) ---
     const bloqueModoCiego = document.getElementById("bloque-modo-ciego");
@@ -220,11 +228,17 @@ document.addEventListener("DOMContentLoaded", () => {
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     }
 
+    /**
+     * Callback global requerido por YouTube IFrame API al terminar de cargar.
+     */
     window.onYouTubeIframeAPIReady = function() {
         console.log("[TubesTer] YouTube IFrame API lista para su uso.");
         inicializarReproductorYouTube();
     };
 
+    /**
+     * Crea una sola instancia del reproductor y conecta sus callbacks de estado.
+     */
     function inicializarReproductorYouTube() {
         if (ytPlayer) return;
 
@@ -254,6 +268,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    /**
+     * Callback de YouTube cuando el reproductor ya puede recibir comandos.
+     */
     function onPlayerReady() {
         console.log("[TubesTer] Reproductor de YouTube listo y vinculado.");
         estadoJuego.reproductorListo = true;
@@ -262,11 +279,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    /**
+     * Intenta el siguiente video de respaldo o muestra el error final de reproducción.
+     * @param {Object} event - Evento de error enviado por YouTube.
+     */
     function onPlayerError(event) {
         console.error("[TubesTer] Error del reproductor YouTube:", event.data);
         if (pasarAlSiguienteYoutube(event.data)) return;
 
         const mensaje = "No se pudo reproducir la canción. Se agotaron los enlaces de respaldo.";
+        detenerTemporizadorInicio();
+        estadoJuego.inicioReproduccionSolicitado = false;
         const estadoVisible = bloqueRevelacion.classList.contains("oculto")
             ? estadoReproduccion
             : estadoRevelacion;
@@ -274,17 +297,24 @@ document.addEventListener("DOMContentLoaded", () => {
         btnForzarPlay.classList.add("oculto");
     }
 
+    /**
+     * Avanza al siguiente enlace de respaldo disponible.
+     * @param {number|string} codigoError - Código o causa del video fallido.
+     * @returns {boolean} Indica si había otro enlace para intentar.
+     */
     function pasarAlSiguienteYoutube(codigoError) {
         const siguienteIndice = estadoJuego.indiceYoutubeActual + 1;
         if (siguienteIndice >= estadoJuego.youtubeIds.length) return false;
 
         console.warn(`[TubesTer] Falló el video ${estadoJuego.indiceYoutubeActual + 1}; probando respaldo ${siguienteIndice + 1}.`, codigoError);
+        detenerTemporizadorInicio();
         estadoJuego.indiceYoutubeActual = siguienteIndice;
         if (!bloqueModoCiego.classList.contains("oculto")) {
             detenerTemporizador();
             estadoJuego.saltoRealizado = false;
         }
         estadoJuego.estaReproduciendo = false;
+        estadoJuego.inicioReproduccionSolicitado = false;
         const estadoVisible = bloqueRevelacion.classList.contains("oculto")
             ? estadoReproduccion
             : estadoRevelacion;
@@ -293,6 +323,9 @@ document.addEventListener("DOMContentLoaded", () => {
         return true;
     }
 
+    /**
+     * Prepara o reproduce el enlace actual según el temporizador de inicio configurado.
+     */
     function reproducirYoutubeActual() {
         if (!ytPlayer || !estadoJuego.reproductorListo) return;
 
@@ -304,15 +337,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            ytPlayer.mute();
-            ytPlayer.loadVideoById({ videoId, startSeconds: 0 });
-            ytPlayer.playVideo();
-            setTimeout(() => {
-                if (estadoJuego.cancionActual && !estadoJuego.estaReproduciendo) {
+            if (!estadoJuego.inicioReproduccionSolicitado && CONFIG_JUEGO.temporizadorInicio !== "no") {
+                ytPlayer.mute();
+                ytPlayer.cueVideoById({ videoId, startSeconds: 0 });
+
+                if (CONFIG_JUEGO.temporizadorInicio === "click") {
+                    textoCortina.textContent = "Cuando quieras, pulsa para empezar";
+                    contadorInicio.classList.add("oculto");
+                    btnForzarPlay.textContent = "▶️ Iniciar canción";
                     btnForzarPlay.classList.remove("oculto");
-                    btnForzarPlay.textContent = "▶️ Toca para iniciar audio";
+                } else {
+                    btnForzarPlay.classList.add("oculto");
+                    iniciarCuentaRegresivaInicio(Number(CONFIG_JUEGO.temporizadorInicio));
                 }
-            }, 2500);
+                return;
+            }
+
+            iniciarReproduccionSolicitada(false);
         } catch (error) {
             console.error("[TubesTer] No se pudo cargar un video de YouTube:", error);
             if (!pasarAlSiguienteYoutube(error)) {
@@ -320,11 +361,100 @@ document.addEventListener("DOMContentLoaded", () => {
                     ? estadoReproduccion
                     : estadoRevelacion;
                 estadoVisible.textContent = "No se pudo cargar la canción. Se agotaron los enlaces de respaldo.";
+                detenerTemporizadorInicio();
+                estadoJuego.inicioReproduccionSolicitado = false;
                 btnForzarPlay.classList.add("oculto");
             }
         }
     }
 
+    /**
+     * Muestra la cuenta regresiva previa y autoriza la reproducción al llegar a cero.
+     * @param {number} segundos - Duración inicial de la cuenta regresiva.
+     */
+    function iniciarCuentaRegresivaInicio(segundos) {
+        detenerTemporizadorInicio();
+        let restante = segundos;
+        textoCortina.textContent = "La canción empieza en";
+        contadorInicio.textContent = restante;
+        contadorInicio.classList.remove("oculto");
+
+        const actualizarCuentaRegresiva = () => {
+            restante -= 1;
+            contadorInicio.textContent = restante;
+            if (restante > 0) {
+                estadoJuego.temporizadorInicio = setTimeout(actualizarCuentaRegresiva, 1000);
+                return;
+            }
+
+            estadoJuego.temporizadorInicio = setTimeout(() => {
+                estadoJuego.temporizadorInicio = null;
+                iniciarReproduccionSolicitada(true);
+            }, 350);
+        };
+
+        estadoJuego.temporizadorInicio = setTimeout(actualizarCuentaRegresiva, 1000);
+    }
+
+    /**
+     * Cancela la cuenta regresiva previa y oculta su indicador.
+     */
+    function detenerTemporizadorInicio() {
+        if (estadoJuego.temporizadorInicio) {
+            clearTimeout(estadoJuego.temporizadorInicio);
+            estadoJuego.temporizadorInicio = null;
+        }
+        contadorInicio.classList.add("oculto");
+    }
+
+    /**
+     * Inicia el audio cuando corresponde, usando el video ya preparado si está disponible.
+     * @param {boolean} videoPreparado - Indica si el reproductor ya cargó el video en pausa.
+     */
+    function iniciarReproduccionSolicitada(videoPreparado) {
+        if (!ytPlayer || !estadoJuego.reproductorListo || !estadoJuego.cancionActual) return;
+
+        detenerTemporizadorInicio();
+        estadoJuego.inicioReproduccionSolicitado = true;
+        textoCortina.textContent = "Música en reproducción a ciegas";
+        btnForzarPlay.classList.add("oculto");
+
+        try {
+            if (videoPreparado) {
+                ytPlayer.playVideo();
+            } else {
+                const videoId = estadoJuego.youtubeIds[estadoJuego.indiceYoutubeActual];
+                if (!videoId) return;
+                ytPlayer.mute();
+                ytPlayer.loadVideoById({ videoId, startSeconds: 0 });
+                ytPlayer.playVideo();
+            }
+        } catch (error) {
+            console.error("[TubesTer] No se pudo iniciar la reproducción:", error);
+            if (!pasarAlSiguienteYoutube(error)) {
+                const estadoVisible = bloqueRevelacion.classList.contains("oculto")
+                    ? estadoReproduccion
+                    : estadoRevelacion;
+                estadoVisible.textContent = "No se pudo iniciar la canción. Se agotaron los enlaces de respaldo.";
+                estadoJuego.inicioReproduccionSolicitado = false;
+                btnForzarPlay.classList.add("oculto");
+            }
+            return;
+        }
+
+        setTimeout(() => {
+            if (estadoJuego.cancionActual && estadoJuego.inicioReproduccionSolicitado && !estadoJuego.estaReproduciendo) {
+                btnForzarPlay.textContent = "▶️ Reintentar audio";
+                btnForzarPlay.classList.remove("oculto");
+            }
+        }, 2500);
+    }
+
+    /**
+     * Extrae el identificador de 11 caracteres desde una URL habitual de YouTube.
+     * @param {string} url - URL completa o ID directo del video.
+     * @returns {string|null} ID del video o null si el valor no es válido.
+     */
     function extraerVideoId(url) {
         if (!url) return null;
         const texto = url.trim();
@@ -335,6 +465,11 @@ document.addEventListener("DOMContentLoaded", () => {
         return match ? match[1] : null;
     }
 
+    /**
+     * Elige un punto de inicio aleatorio que deja espacio para reproducir el fragmento.
+     * @param {number} duracionTotal - Duración total del video en segundos.
+     * @returns {number} Segundo desde el que comenzará la escucha a ciegas.
+     */
     function calcularTimestampAleatorio(duracionTotal) {
         const minInicio = Math.floor(duracionTotal * CONFIG_JUEGO.porcentajeMinInicio);
         const limiteMaxTrack = duracionTotal * (1 - CONFIG_JUEGO.porcentajeMaxFin);
@@ -345,6 +480,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return inicioAleatorio;
     }
 
+    /**
+     * Sincroniza el estado del juego con los eventos del reproductor de YouTube.
+     * @param {Object} event - Evento de cambio de estado del reproductor.
+     */
     function onPlayerStateChange(event) {
         if (event.data === YT.PlayerState.PLAYING) {
             estadoJuego.estaReproduciendo = true;
@@ -382,7 +521,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 estadoReproduccion.textContent = "⏸️ Audio pausado";
             }
         } else if (event.data === YT.PlayerState.BUFFERING) {
-            if (!bloqueModoCiego.classList.contains("oculto")) {
+            if (!bloqueModoCiego.classList.contains("oculto") && estadoJuego.inicioReproduccionSolicitado) {
                 estadoReproduccion.textContent = "Cargando audio...";
             }
         } else if (event.data === YT.PlayerState.ENDED && !bloqueModoCiego.classList.contains("oculto")) {
@@ -391,6 +530,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    /**
+     * Salta al fragmento elegido, activa el sonido y arranca el temporizador de escucha.
+     * @param {number} duracion - Duración del video en segundos.
+     */
     function ejecutarSaltoAleatorioYDesmutear(duracion) {
         estadoJuego.saltoRealizado = true;
         const puntoInicio = CONFIG_JUEGO.reproducirCancionCompleta
@@ -418,10 +561,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // 5. CONTROL DEL MODO CIEGO Y TEMPORIZADOR (FASE 3)
     // =========================================================================
 
-    function iniciarModoCiego(cancion) {
+    /**
+     * Configura la ronda a ciegas y prepara la reproducción según la selección de inicio.
+     * @param {Object} cancion - Canción encontrada en el catálogo.
+     * @param {string} [idEscaneado] - ID leído, usado para mostrar el sufijo correcto.
+     */
+    function iniciarModoCiego(cancion, idEscaneado) {
+        detenerTemporizadorInicio();
         estadoJuego.cancionActual = cancion;
         estadoJuego.saltoRealizado = false;
+        estadoJuego.estaReproduciendo = false;
         estadoJuego.tiempoAgotado = false;
+        estadoJuego.inicioReproduccionSolicitado = false;
         if (estadoJuego.temporizadorRevelacion) {
             clearTimeout(estadoJuego.temporizadorRevelacion);
             estadoJuego.temporizadorRevelacion = null;
@@ -441,8 +592,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         badgeModoJuego.textContent = "🎧 Modo Ciego";
         badgeModoJuego.className = "badge-modo";
-        indicadorIdCarta.textContent = Array.isArray(cancion.ids) ? cancion.ids[0] : "";
+        const idCarta = String(idEscaneado || (Array.isArray(cancion.ids) ? cancion.ids[0] : "") || "");
+        indicadorIdCarta.textContent = idCarta.slice(-5);
         estadoReproduccion.textContent = "Conectando con YouTube...";
+        textoCortina.textContent = "Música en reproducción a ciegas";
+        contadorInicio.classList.add("oculto");
         btnForzarPlay.classList.add("oculto");
         
         temporizadorSegundos.textContent = CONFIG_JUEGO.reproducirCancionCompleta
@@ -466,14 +620,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!ytPlayer || !estadoJuego.reproductorListo) {
             estadoReproduccion.textContent = "Cargando motor de reproducción...";
-            btnForzarPlay.classList.remove("oculto");
-            btnForzarPlay.textContent = "▶️ Toca para iniciar audio";
             return;
         }
 
         reproducirYoutubeActual();
     }
 
+    /**
+     * Inicia el conteo del fragmento; el tiempo avanza solo mientras el audio se reproduce.
+     * @param {number} segundosTotales - Duración de escucha en segundos.
+     */
     function iniciarTemporizador(segundosTotales) {
         detenerTemporizador();
         estadoJuego.tiempoRestante = segundosTotales;
@@ -495,6 +651,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 250);
     }
 
+    /**
+     * Actualiza el tiempo restante y degrada la barra de progreso de verde a rojo.
+     * @param {number} restante - Segundos que quedan en el fragmento.
+     * @param {number} total - Duración inicial del fragmento.
+     */
     function actualizarVisualTemporizador(restante, total) {
         const segEnteros = Math.ceil(restante);
         temporizadorSegundos.textContent = `${segEnteros}s`;
@@ -507,6 +668,9 @@ document.addEventListener("DOMContentLoaded", () => {
         barraProgresoRelleno.style.backgroundColor = `rgb(${rojo}, ${verde}, ${azul})`;
     }
 
+    /**
+     * Detiene el intervalo de escucha si hay uno activo.
+     */
     function detenerTemporizador() {
         if (estadoJuego.intervaloTemporizador) {
             clearInterval(estadoJuego.intervaloTemporizador);
@@ -514,8 +678,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    /**
+     * Alterna entre pausar y reanudar la canción durante el modo ciego.
+     */
     function togglePlayPause() {
-        if (!ytPlayer) return;
+        if (!ytPlayer || !estadoJuego.inicioReproduccionSolicitado) return;
 
         if (estadoJuego.estaReproduciendo) {
             ytPlayer.pauseVideo();
@@ -525,10 +692,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    /**
+     * Cambia el texto del control de escucha según el estado del reproductor.
+     * @param {boolean} reproduciendo - Indica si el video está reproduciéndose.
+     */
     function actualizarBotonPlayPause(reproduciendo) {
         btnPlayPause.textContent = reproduciendo ? "⏸️ Pausar" : "▶️ Reanudar";
     }
 
+    /**
+     * Guarda el punto de corte y programa la revelación de la canción tras dos segundos.
+     */
     function tiempoAgotadoModoCiego() {
         if (estadoJuego.tiempoAgotado || !estadoJuego.cancionActual) return;
 
@@ -552,6 +726,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // 6. PANTALLA DE REVELACIÓN Y CONTROLES DUALES (FASE 4)
     // =========================================================================
 
+    /**
+     * Separa el año de la fecha de lanzamiento para la pantalla de revelación.
+     * @param {string} fechaStr - Fecha con formato AAAA-MM-DD.
+     * @returns {{anio: string, fechaCompleta: string}} Año y fecha que se mostrarán.
+     */
     function extraerDatosFecha(fechaStr) {
         if (!fechaStr) return { anio: "----", fechaCompleta: "Desconocida" };
         const partes = fechaStr.split("-");
@@ -562,7 +741,11 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
+    /**
+     * Sustituye la cortina, muestra los datos de la canción y reproduce desde el inicio.
+     */
     function revelarCarta() {
+        detenerTemporizadorInicio();
         detenerTemporizador();
         if (estadoJuego.temporizadorRevelacion) {
             clearTimeout(estadoJuego.temporizadorRevelacion);
@@ -610,6 +793,9 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log(`[TubesTer] Canción revelada: ${cancion.titulo} (${anio}) | Corte: ${Math.floor(estadoJuego.timestampCorte)}s`);
     }
 
+    /**
+     * Reinicia la canción revelada desde el segundo cero.
+     */
     function reproducirDesdeInicio() {
         if (!ytPlayer) return;
         ytPlayer.seekTo(0, true);
@@ -620,6 +806,9 @@ document.addEventListener("DOMContentLoaded", () => {
         actualizarBotonToggleVideo(true);
     }
 
+    /**
+     * Reanuda el video revelado desde el punto donde terminó el fragmento a ciegas.
+     */
     function continuarDesdeCorte() {
         if (!ytPlayer) return;
         const puntoCorte = estadoJuego.timestampCorte || estadoJuego.timestampInicio || 0;
@@ -631,6 +820,9 @@ document.addEventListener("DOMContentLoaded", () => {
         actualizarBotonToggleVideo(true);
     }
 
+    /**
+     * Alterna la reproducción del video visible en la pantalla de revelación.
+     */
     function toggleVideoRevelado() {
         if (!ytPlayer) return;
         if (estadoJuego.estaReproduciendo) {
@@ -644,6 +836,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    /**
+     * Sincroniza icono, etiqueta accesible y tooltip del control de pausa/reanudación.
+     * @param {boolean} reproduciendo - Indica si el video está reproduciéndose.
+     */
     function actualizarBotonToggleVideo(reproduciendo) {
         const accion = reproduciendo ? "Pausar video" : "Reanudar video";
         btnToggleVideo.textContent = reproduciendo ? "⏸️" : "▶️";
@@ -651,7 +847,11 @@ document.addEventListener("DOMContentLoaded", () => {
         btnToggleVideo.title = accion;
     }
 
+    /**
+     * Limpia el estado de la ronda actual y vuelve directamente al escáner del juego.
+     */
     function siguienteCarta() {
+        detenerTemporizadorInicio();
         if (ytPlayer && ytPlayer.stopVideo) {
             ytPlayer.stopVideo();
         }
@@ -674,11 +874,18 @@ document.addEventListener("DOMContentLoaded", () => {
         iniciarScanner();
     }
 
+    /**
+     * Finaliza la partida desde el modo ciego.
+     */
     function cancelarJuego() {
         finalizarPartida();
     }
 
+    /**
+     * Detiene reproductor y temporizadores, limpia la ronda y vuelve al menú principal.
+     */
     function finalizarPartida() {
+        detenerTemporizadorInicio();
         detenerTemporizador();
         if (estadoJuego.temporizadorRevelacion) {
             clearTimeout(estadoJuego.temporizadorRevelacion);
@@ -709,18 +916,22 @@ document.addEventListener("DOMContentLoaded", () => {
     // 7. PROCESAMIENTO DE CÓDIGOS QR
     // =========================================================================
 
+    /**
+     * Busca el ID escaneado y abre la ronda o el aviso de carta no registrada.
+     * @param {string} rawId - Contenido leído del código QR.
+     */
     function procesarCodigo(rawId) {
         const id = rawId.trim();
         const cancion = buscarCancionPorId(id);
 
         if (cancion) {
             console.log("[TubesTer] Carta identificada:", cancion);
-            iniciarModoCiego(cancion);
+            iniciarModoCiego(cancion, id);
         } else {
             seccionConfiguracion.classList.add("oculto");
             seccionMenu.classList.add("oculto");
             seccionJuego.classList.add("oculto");
-            codigoEscaneado.textContent = id;
+            codigoEscaneado.textContent = id.slice(-5);
             seccionResultado.classList.remove("oculto");
         }
     }
@@ -729,6 +940,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // 8. ESCÁNER QR DEL JUEGO (html5-qrcode optimizado)
     // =========================================================================
 
+    /**
+     * Abre el modal e inicia la cámara para leer una carta durante la partida.
+     */
     async function iniciarScanner() {
         if (typeof Html5Qrcode === "undefined") {
             alert("Error: La librería html5-qrcode no se pudo cargar. Revisa tu conexión a internet.");
@@ -769,6 +983,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    /**
+     * Detiene la cámara del juego y cierra su modal.
+     */
     async function detenerScanner() {
         if (html5QrCode && isScanning) {
             try {
@@ -782,6 +999,10 @@ document.addEventListener("DOMContentLoaded", () => {
         modalScanner.classList.add("oculto");
     }
 
+    /**
+     * Callback del lector de juego: detiene la cámara y procesa el QR reconocido.
+     * @param {string} decodedText - Texto decodificado del QR.
+     */
     async function onScanSuccess(decodedText) {
         if (navigator.vibrate) {
             navigator.vibrate(100);
@@ -790,6 +1011,11 @@ document.addEventListener("DOMContentLoaded", () => {
         procesarCodigo(decodedText);
     }
 
+    /**
+     * Convierte errores comunes de cámara en instrucciones comprensibles para el usuario.
+     * @param {unknown} error - Error devuelto al iniciar la cámara.
+     * @returns {string} Mensaje de error localizado.
+     */
     function obtenerMensajeError(error) {
         const errorStr = String(error).toLowerCase();
         if (errorStr.includes("notallowederror") || errorStr.includes("permission")) {
@@ -801,6 +1027,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return "No fue posible acceder a la cámara. Verifica los permisos del navegador.";
     }
 
+    /**
+     * Presenta un error en el modal del escáner de partida.
+     * @param {string} mensaje - Mensaje que se mostrará.
+     */
     function mostrarErrorScanner(mensaje) {
         scannerError.textContent = mensaje;
         scannerError.classList.remove("oculto");
@@ -869,6 +1099,10 @@ document.addEventListener("DOMContentLoaded", () => {
         renderizarListaPendientes();
     }
 
+    /**
+     * Elimina una carta de la lista acumulada y persiste el cambio.
+     * @param {number} index - Posición de la carta dentro de la lista.
+     */
     function eliminarCartaPendiente(index) {
         cartasPendientes.splice(index, 1);
         guardarCartasPendientes();
@@ -936,6 +1170,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    /**
+     * Traduce errores de permisos o disponibilidad de cámara del registro.
+     * @param {unknown} error - Error devuelto al iniciar el lector de registro.
+     * @returns {string} Mensaje de error localizado.
+     */
     function obtenerMensajeErrorScannerRegistro(error) {
         const nombreError = error && error.name ? error.name : "";
         if (nombreError === "NotAllowedError" || nombreError === "PermissionDeniedError") {
@@ -969,6 +1208,10 @@ document.addEventListener("DOMContentLoaded", () => {
         contenedorScannerRegistro.classList.add("oculto");
     }
 
+    /**
+     * Habilita o limpia los controles de referencia para una lectura pendiente.
+     * @param {boolean} habilitado - Indica si hay una carta esperando confirmación.
+     */
     function actualizarFormularioCartaEscaneada(habilitado) {
         inputReferenciaCarta.disabled = !habilitado;
         btnCancelarCarta.disabled = !habilitado;
@@ -1020,6 +1263,9 @@ document.addEventListener("DOMContentLoaded", () => {
         mostrarAlertaRegistro(`📝 Carta ${idLeido} escaneada. Escribe su nombre o referencia.`, "aviso");
     }
 
+    /**
+     * Descarta la lectura pendiente y reactiva la cámara de registro.
+     */
     async function cancelarCartaEscaneada() {
         if (!codigoCartaEscaneada) return;
         codigoCartaEscaneada = null;
@@ -1028,6 +1274,9 @@ document.addEventListener("DOMContentLoaded", () => {
         await iniciarScannerRegistro();
     }
 
+    /**
+     * Valida y guarda la carta escaneada antes de continuar con la siguiente lectura.
+     */
     async function agregarCartaEscaneada() {
         if (!codigoCartaEscaneada) return;
         const referencia = inputReferenciaCarta.value.trim();
@@ -1064,16 +1313,22 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         texto += `
-INSTRUCCIONES PARA COMPLETAR EL CATÁLOGO:
-Investiga cada canción de la lista usando su nombre o referencia como pista. Verifica los datos con fuentes confiables y no inventes información. Para cada canción, busca:
+INSTRUCCIONES CRÍTICAS PARA COMPLETAR EL CATÁLOGO Y LOS ENLACES:
+Investiga cada canción de la lista usando su nombre o referencia como pista. Verifica los datos con fuentes confiables y NO INVENTES información bajo ninguna circunstancia. 
+
+Para cada canción, busca obligatoriamente:
 - El artista original.
 - El título original, con su ortografía oficial.
 - El álbum al que pertenece.
 - La fecha de lanzamiento en formato AAAA-MM-DD.
 - El género musical.
-- Uno o dos enlaces válidos a videos de YouTube de esa canción; colócalos en youtube_urls, que debe ser un array.
+- **Enlaces de YouTube (REGLA ESTRICTA DE VERIFICACIÓN):**
+  1. DEBES buscar en la web el video oficial de la canción en YouTube antes de escribir el enlace.
+  2. Prioriza siempre el canal oficial del artista (ej. VEVO, canal verificado de la banda) o un lyric/audio oficial verificado.
+  3. ESTRICTAMENTE PROHIBIDO ADIVINAR O INVENTAR IDs DE YOUTUBE. Si no estás 100% seguro de que el enlace existe y pertenece a esa canción, búscalo de nuevo. Los enlaces deben ser reales y funcionales (formato: "https://www.youtube.com/watch?v=...").
+  4. Colócalos en el array "youtube_urls".
 
-Genera un archivo .txt con todas las canciones. El archivo debe contener por cada cancion un bloque como el especificado, sin comentarios ni texto adicional, con exactamente la estructura y el orden de propiedades usados:
+Genera un archivo .txt con todas las canciones. El archivo debe contener por cada canción un bloque como el especificado, sin comentarios ni texto adicional, con exactamente la estructura y el orden de propiedades usados:
 {
   "ids": ["ID leído del QR de esta entrada"],
   "version": "versión elegida para esta entrada",
@@ -1085,8 +1340,8 @@ Genera un archivo .txt con todas las canciones. El archivo debe contener por cad
   "youtube_urls": ["https://www.youtube.com/watch?v=..."]
 }
 
-Para cada objeto, coloca el ID indicado en la lista como primer dato dentro del array ids y la versión indicada como segundo atributo, version. Usa el nombre o referencia únicamente para identificar e investigar la canción; el título final debe ser el título original verificado. Mantén los nombres y el orden de las propiedades tal como aparecen en el ejemplo. Entrega el archivo .txt.
-Para cada canción busca en YouTube el enlace oficial. Asegúrate de que provenga del canal oficial, verifica que el enlace sea real y que permita la inserción (embed). Devuélveme únicamente la URL limpia y lista para embeber; de lo contrario, busca una alternativa válida.`;
+Para cada objeto, coloca el ID indicado en la lista como primer dato dentro del array ids y la versión indicada como segundo atributo, version. Usa el nombre o referencia únicamente para identificar e investigar la canción; el título final debe ser el título original verificado. Mantén los nombres y el orden de las propiedades tal como aparecen en el ejemplo. Entrega únicamente el archivo .txt resultante.
+        `;
         return texto;
     }
 
@@ -1128,6 +1383,9 @@ Para cada canción busca en YouTube el enlace oficial. Asegúrate de que proveng
         mostrarAlertaRegistro("⬇️ Archivo .txt descargado con éxito.", "exito");
     }
 
+    /**
+     * Vacía la lista persistida de cartas pendientes tras confirmación del usuario.
+     */
     function limpiarPendientes() {
         if (cartasPendientes.length === 0) return;
         if (confirm("¿Estás seguro de vaciar toda la lista de cartas pendientes acumuladas?")) {
@@ -1163,10 +1421,16 @@ Para cada canción busca en YouTube el enlace oficial. Asegúrate de que proveng
             CONFIG_JUEGO.duracionFragmentoSegundos = duraciones[opcion.value];
         });
     });
-    document.querySelectorAll('input[name="chance"]').forEach((opcion) => {
+    document.querySelectorAll('input[name="temporizador-inicio"]').forEach((opcion) => {
         opcion.addEventListener("change", () => {
-            CONFIG_JUEGO.chanceActivada = opcion.value !== "no";
-            CONFIG_JUEGO.cantidadChances = opcion.value === "no" ? 0 : Number(opcion.value);
+            CONFIG_JUEGO.temporizadorInicio = opcion.value;
+            const descripciones = {
+                no: "Inicio inmediato",
+                "3": "3 segundos para inicio",
+                "2": "2 segundos para inicio",
+                click: "Hasta que se dé clic en el reproductor"
+            };
+            ayudaTemporizadorInicio.textContent = descripciones[opcion.value];
         });
     });
     btnPartidaClasica.addEventListener("click", iniciarScanner);
@@ -1179,7 +1443,11 @@ Para cada canción busca en YouTube el enlace oficial. Asegúrate de que proveng
     btnCancelarJuego.addEventListener("click", cancelarJuego);
 
     btnForzarPlay.addEventListener("click", () => {
-        if (ytPlayer) {
+        if (!ytPlayer || !estadoJuego.reproductorListo) return;
+
+        if (!estadoJuego.inicioReproduccionSolicitado) {
+            iniciarReproduccionSolicitada(true);
+        } else {
             ytPlayer.unMute();
             ytPlayer.playVideo();
             btnForzarPlay.classList.add("oculto");
@@ -1207,6 +1475,9 @@ Para cada canción busca en YouTube el enlace oficial. Asegúrate de que proveng
         iniciarScannerRegistro();
     });
 
+    /**
+     * Cierra el registro tras detener la cámara y descartar cualquier lectura pendiente.
+     */
     const cerrarModalRegistro = async () => {
         codigoCartaEscaneada = null;
         bloqueoEscaneoRegistro = true;

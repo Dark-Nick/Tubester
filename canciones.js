@@ -1,7 +1,7 @@
 // TubesTer - Datos locales de canciones (permite funcionamiento directo con doble clic sin servidor)
 window.CANCIONES_LOCALES = [
 {
-    "ids": ["HIT_001"],
+    "ids": ["y0low"],
     "version": "original",
     "artista": "Queen",
     "titulo": "I Want To Break Free",
