@@ -1,4 +1,4 @@
-# 🎵 TubesTer v1.0.3
+# 🎵 TubesTer v1.1.1
 
 > **Nota importante:** Este proyecto es una versión pensada para utilizarse como plataforma de música basada en YouTube, **sin ánimo de lucro**, con el objetivo principal de ayudar y servir de alternativa a aquellas personas que no dispongan de Spotify.
 
@@ -18,6 +18,7 @@ El catálogo usa `ids` para asociar varias cartas físicas a una canción y `you
 ```json
 {
   "ids": ["HIT_001", "EDICION_001"],
+  "version": "original",
   "titulo": "Nombre de la canción",
   "artista": "Nombre del artista",
   "genero": "Rock",
@@ -34,10 +35,16 @@ El catálogo usa `ids` para asociar varias cartas físicas a una canción y `you
 * **HTML (~15.9%):** Estructura base de la aplicación[cite: 1].
 * **PWA:** Configuración mediante Service Worker (`sw.js`) y `manifest.json`[cite: 1].
 
-## Cambios de la versión 1.0.3
-- Se reemplazó la configuración de Chance por un temporizador de inicio: **No**, **3s**, **2s** y **Click**, con una descripción de la opción seleccionada.
-- Se añadió inicio inmediato, cuenta regresiva previa a la reproducción o inicio manual mediante un botón grande.
-- En el modo ciego, el identificador de la carta muestra únicamente sus últimos cinco caracteres.
+## Cambios de la versión 1.1.0
+- Se agregó **Lista de canciones** al menú principal para consultar artista, título, género y versión de las canciones del catálogo.
+- La lista incluye filtros dinámicos por versión y género, un contador de resultados y paginación de diez canciones.
+- Se habilitó **Partida Tubester**, con selección múltiple de versiones y géneros, contador de canciones elegibles y partidas aleatorias sin repetir hasta agotar el grupo filtrado.
+- La partida Tubester permite activar de 1 a 100 rondas; muestra la ronda actual y termina al completar el límite. Sin rondas, la selección disponible se reinicia al agotarse para continuar jugando.
+
+## Cambios de la versión 1.1.1
+- Se aplicaron colores rojo y verde al título de configuración de **Partida Tubester** y a las partes de la marca.
+- La barra para elegir la cantidad de rondas ahora muestra un degradado de rojo a verde.
+- Al iniciar una partida Tubester, se oculta la pantalla de configuración y queda visible el modo de juego.
 
 ## 📁 Estructura del Repositorio
 * `index.html` - Página principal de la interfaz[cite: 1].

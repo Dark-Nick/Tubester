@@ -3,11 +3,12 @@
  * TubesTer - Script Principal (app.js)
  * ============================================================================
  * 
- * VERSIÓN 1.0.3
+ * VERSIÓN 1.1.1
  * - Modo Ciego (Fase 3): Reproducción anti-spoilers con inicio aleatorio 15%-80%.
  * - Pantalla de Revelación (Fase 4): Video visible, Gran Año y Controles Duales.
  * - Despliegue PWA (Fase 5): Service Worker con Network-First y aceleración móvil.
  * - Temporizador de inicio de partida: inicio inmediato, cuenta regresiva o por clic.
+ * - Lista de canciones: filtros por versión y género con paginación de diez canciones.
  * - Herramienta de Registro: Captura guiada de cartas físicas con
  *   referencia, filtro de duplicados, persistencia y exportación.
  */
@@ -67,10 +68,36 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- Referencias: Menú Principal ---
     const seccionMenu = document.getElementById("seccion-menu");
     const seccionConfiguracion = document.getElementById("seccion-configuracion");
+    const seccionConfiguracionTubester = document.getElementById("seccion-configuracion-tubester");
+    const seccionListaCanciones = document.getElementById("seccion-lista-canciones");
     const btnNuevaPartida = document.getElementById("btn-nueva-partida");
     const btnVolverMenu = document.getElementById("btn-volver-menu");
+    const btnAbrirListaCanciones = document.getElementById("btn-abrir-lista-canciones");
+    const btnVolverListaMenu = document.getElementById("btn-volver-lista-menu");
     const btnPartidaClasica = document.getElementById("btn-partida-clasica");
+    const btnPartidaTubester = document.getElementById("btn-partida-tubester");
+    const btnVolverConfiguracionTubester = document.getElementById("btn-volver-configuracion-tubester");
+    const btnRondasTubester = document.getElementById("btn-rondas-tubester");
+    const controlCantidadRondas = document.getElementById("control-cantidad-rondas");
+    const cantidadRondasTubester = document.getElementById("cantidad-rondas-tubester");
+    const valorCantidadRondas = document.getElementById("valor-cantidad-rondas");
+    const selectorVersionTubester = document.getElementById("selector-version-tubester");
+    const btnAgregarVersionTubester = document.getElementById("btn-agregar-version-tubester");
+    const versionesSeleccionadasTubester = document.getElementById("versiones-seleccionadas-tubester");
+    const selectorGeneroTubester = document.getElementById("selector-genero-tubester");
+    const btnAgregarGeneroTubester = document.getElementById("btn-agregar-genero-tubester");
+    const generosSeleccionadosTubester = document.getElementById("generos-seleccionados-tubester");
+    const contadorCancionesTubester = document.getElementById("contador-canciones-tubester");
+    const btnIniciarTubester = document.getElementById("btn-iniciar-tubester");
+    const indicadorRondaTubester = document.getElementById("indicador-ronda-tubester");
     const btnAbrirRegistro = document.getElementById("btn-abrir-registro");
+    const filtroVersionCanciones = document.getElementById("filtro-version-canciones");
+    const filtroGeneroCanciones = document.getElementById("filtro-genero-canciones");
+    const contadorListaCanciones = document.getElementById("contador-lista-canciones");
+    const elementosListaCanciones = document.getElementById("elementos-lista-canciones");
+    const btnPaginaAnterior = document.getElementById("btn-pagina-anterior");
+    const btnPaginaSiguiente = document.getElementById("btn-pagina-siguiente");
+    const estadoPaginacionCanciones = document.getElementById("estado-paginacion-canciones");
 
     // --- Referencias: Tarjeta del Juego ---
     const seccionJuego = document.getElementById("seccion-juego");
@@ -136,6 +163,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Variables internas
     let cancionesDB = [];
+    const versionesTubester = new Set();
+    const generosTubester = new Set();
+    const estadoPartidaTubester = {
+        activa: false,
+        rondasActivadas: false,
+        cantidadRondas: 10,
+        rondaActual: 0,
+        cancionesDisponibles: [],
+        cancionesRestantes: []
+    };
+    const cancionesPorPagina = 10;
+    let paginaListaCanciones = 1;
     let html5QrCode = null;
     let isScanning = false;
     let ytPlayer = null;
@@ -166,6 +205,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (Array.isArray(window.CANCIONES_LOCALES) && window.CANCIONES_LOCALES.length > 0) {
             cancionesDB = window.CANCIONES_LOCALES;
             console.log(`[TubesTer] Catálogo local cargado: ${cancionesDB.length} canciones.`);
+            actualizarFiltrosListaCanciones();
+            renderizarListaCanciones();
         }
 
         try {
@@ -175,6 +216,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (Array.isArray(data) && data.length > 0) {
                     cancionesDB = data;
                     console.log(`[TubesTer] Catálogo sincronizado vía fetch: ${cancionesDB.length} canciones.`);
+                    actualizarFiltrosListaCanciones();
+                    renderizarListaCanciones();
                 }
             }
         } catch (error) {
@@ -580,6 +623,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         seccionMenu.classList.add("oculto");
         seccionConfiguracion.classList.add("oculto");
+        seccionConfiguracionTubester.classList.add("oculto");
         seccionResultado.classList.add("oculto");
         seccionJuego.classList.remove("oculto");
         document.querySelector(".contenedor-principal").classList.remove("revelacion-activa");
@@ -594,6 +638,7 @@ document.addEventListener("DOMContentLoaded", () => {
         badgeModoJuego.className = "badge-modo";
         const idCarta = String(idEscaneado || (Array.isArray(cancion.ids) ? cancion.ids[0] : "") || "");
         indicadorIdCarta.textContent = idCarta.slice(-5);
+        actualizarIndicadorRondaTubester();
         estadoReproduccion.textContent = "Conectando con YouTube...";
         textoCortina.textContent = "Música en reproducción a ciegas";
         contadorInicio.classList.add("oculto");
@@ -848,9 +893,78 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /**
+     * Inicia una partida Tubester y prepara el primer sorteo del grupo filtrado.
+     */
+    function iniciarPartidaTubester() {
+        const cancionesElegibles = obtenerCancionesElegiblesTubester();
+        if (cancionesElegibles.length === 0) {
+            actualizarDisponibilidadTubester();
+            return;
+        }
+
+        estadoPartidaTubester.activa = true;
+        estadoPartidaTubester.rondasActivadas = btnRondasTubester.getAttribute("aria-pressed") === "true";
+        estadoPartidaTubester.cantidadRondas = Number(cantidadRondasTubester.value);
+        estadoPartidaTubester.rondaActual = 1;
+        estadoPartidaTubester.cancionesDisponibles = cancionesElegibles;
+        estadoPartidaTubester.cancionesRestantes = [...cancionesElegibles];
+        elegirSiguienteCancionTubester();
+    }
+
+    /**
+     * Escoge al azar una canción no usada; repone el conjunto cuando se agota.
+     */
+    function elegirSiguienteCancionTubester() {
+        if (estadoPartidaTubester.cancionesRestantes.length === 0) {
+            estadoPartidaTubester.cancionesRestantes = [...estadoPartidaTubester.cancionesDisponibles];
+        }
+
+        const indiceAleatorio = Math.floor(Math.random() * estadoPartidaTubester.cancionesRestantes.length);
+        const [cancionElegida] = estadoPartidaTubester.cancionesRestantes.splice(indiceAleatorio, 1);
+        const idCarta = Array.isArray(cancionElegida.ids) ? cancionElegida.ids[0] : "";
+        iniciarModoCiego(cancionElegida, idCarta);
+    }
+
+    /**
+     * Actualiza el indicador de ronda y el texto de avanzar según el progreso.
+     */
+    function actualizarIndicadorRondaTubester() {
+        if (!estadoPartidaTubester.activa || !estadoPartidaTubester.rondasActivadas) {
+            indicadorRondaTubester.classList.add("oculto");
+            btnSiguienteCarta.textContent = "🃏 Siguiente Carta";
+            return;
+        }
+
+        indicadorRondaTubester.textContent = `Ronda ${estadoPartidaTubester.rondaActual} de ${estadoPartidaTubester.cantidadRondas}`;
+        indicadorRondaTubester.classList.remove("oculto");
+        btnSiguienteCarta.textContent = estadoPartidaTubester.rondaActual >= estadoPartidaTubester.cantidadRondas
+            ? "🏁 Finalizar partida"
+            : "🃏 Siguiente Carta";
+    }
+
+    /**
+     * Avanza de ronda, termina al alcanzar el límite o sortea otra canción.
+     */
+    function avanzarPartidaTubester() {
+        if (estadoPartidaTubester.rondasActivadas &&
+            estadoPartidaTubester.rondaActual >= estadoPartidaTubester.cantidadRondas) {
+            finalizarPartida();
+            return;
+        }
+
+        estadoPartidaTubester.rondaActual += 1;
+        elegirSiguienteCancionTubester();
+    }
+
+    /**
      * Limpia el estado de la ronda actual y vuelve directamente al escáner del juego.
      */
     function siguienteCarta() {
+        if (estadoPartidaTubester.activa) {
+            avanzarPartidaTubester();
+            return;
+        }
+
         detenerTemporizadorInicio();
         if (ytPlayer && ytPlayer.stopVideo) {
             ytPlayer.stopVideo();
@@ -900,8 +1014,16 @@ document.addEventListener("DOMContentLoaded", () => {
         estadoJuego.tiempoAgotado = false;
         estadoJuego.timestampCorte = 0;
         estadoJuego.timestampInicio = 0;
+        estadoPartidaTubester.activa = false;
+        estadoPartidaTubester.rondasActivadas = false;
+        estadoPartidaTubester.rondaActual = 0;
+        estadoPartidaTubester.cancionesDisponibles = [];
+        estadoPartidaTubester.cancionesRestantes = [];
+        indicadorRondaTubester.classList.add("oculto");
+        btnSiguienteCarta.textContent = "🃏 Siguiente Carta";
         seccionJuego.classList.add("oculto");
         seccionConfiguracion.classList.add("oculto");
+        seccionConfiguracionTubester.classList.add("oculto");
         seccionResultado.classList.add("oculto");
         seccionMenu.classList.remove("oculto");
         document.querySelector(".contenedor-principal").classList.remove("revelacion-activa");
@@ -1089,6 +1211,194 @@ document.addEventListener("DOMContentLoaded", () => {
                 eliminarCartaPendiente(idx);
             });
         });
+    }
+
+    /**
+     * Llena los filtros con las versiones y géneros que existen en el catálogo actual.
+     */
+    function actualizarFiltrosListaCanciones() {
+        const agregarOpciones = (selector, valores, textoInicial) => {
+            const seleccionAnterior = selector.value;
+            selector.replaceChildren(new Option(textoInicial, ""));
+
+            [...new Set(valores
+                .filter(valor => typeof valor === "string" && valor.trim())
+                .map(valor => valor.trim()))]
+                .sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }))
+                .forEach(valor => selector.add(new Option(valor, valor)));
+
+            if ([...selector.options].some(opcion => opcion.value === seleccionAnterior)) {
+                selector.value = seleccionAnterior;
+            }
+        };
+
+        agregarOpciones(
+            filtroVersionCanciones,
+            cancionesDB.map(cancion => cancion.version),
+            "Todas las versiones"
+        );
+        agregarOpciones(
+            filtroGeneroCanciones,
+            cancionesDB.map(cancion => cancion.genero),
+            "Todos los géneros"
+        );
+        actualizarOpcionesTubester();
+    }
+
+    /**
+     * Actualiza las opciones disponibles de versión y género para configurar Tubester.
+     */
+    function actualizarOpcionesTubester() {
+        const actualizarSelector = (selector, valores, textoInicial, seleccionados) => {
+            const seleccionAnterior = selector.value;
+            selector.replaceChildren(new Option(textoInicial, ""));
+            [...new Set(valores
+                .filter(valor => typeof valor === "string" && valor.trim())
+                .map(valor => valor.trim()))]
+                .sort((a, b) => a.localeCompare(b, "es", { sensitivity: "base" }))
+                .forEach(valor => selector.add(new Option(valor, valor)));
+            if ([...selector.options].some(opcion => opcion.value === seleccionAnterior)) {
+                selector.value = seleccionAnterior;
+            }
+            seleccionados.forEach(valor => {
+                if (![...selector.options].some(opcion => opcion.value === valor)) {
+                    seleccionados.delete(valor);
+                }
+            });
+        };
+
+        actualizarSelector(
+            selectorVersionTubester,
+            cancionesDB.map(cancion => cancion.version),
+            "Todas las versiones",
+            versionesTubester
+        );
+        actualizarSelector(
+            selectorGeneroTubester,
+            cancionesDB.map(cancion => cancion.genero),
+            "Todos los géneros",
+            generosTubester
+        );
+        renderizarFiltrosTubester();
+        actualizarDisponibilidadTubester();
+    }
+
+    /**
+     * Devuelve canciones que coinciden con todos los filtros activos de Tubester.
+     * Un conjunto vacío de versiones o géneros representa "todas".
+     * @returns {Array<Object>} Canciones elegibles para la partida.
+     */
+    function obtenerCancionesElegiblesTubester() {
+        return cancionesDB.filter(cancion =>
+            (!versionesTubester.size || versionesTubester.has(cancion.version)) &&
+            (!generosTubester.size || generosTubester.has(cancion.genero))
+        );
+    }
+
+    /**
+     * Renderiza las etiquetas seleccionadas con un control para quitar cada filtro.
+     * @param {Set<string>} seleccionados - Valores actualmente seleccionados.
+     * @param {HTMLElement} contenedor - Contenedor visual de las etiquetas.
+     * @param {string} tipo - Clave de versión o género.
+     */
+    function renderizarEtiquetasFiltroTubester(seleccionados, contenedor, tipo) {
+        contenedor.replaceChildren();
+        seleccionados.forEach(valor => {
+            const etiqueta = document.createElement("span");
+            etiqueta.className = "etiqueta-filtro-tubester";
+            etiqueta.append(document.createTextNode(valor));
+
+            const quitar = document.createElement("button");
+            quitar.type = "button";
+            quitar.className = "quitar-filtro-tubester";
+            quitar.textContent = "×";
+            quitar.setAttribute("aria-label", `Quitar ${tipo}: ${valor}`);
+            quitar.addEventListener("click", () => {
+                seleccionados.delete(valor);
+                renderizarFiltrosTubester();
+                actualizarDisponibilidadTubester();
+            });
+
+            etiqueta.appendChild(quitar);
+            contenedor.appendChild(etiqueta);
+        });
+    }
+
+    /**
+     * Refresca las etiquetas de filtros y su texto contextual de selección.
+     */
+    function renderizarFiltrosTubester() {
+        renderizarEtiquetasFiltroTubester(versionesTubester, versionesSeleccionadasTubester, "versión");
+        renderizarEtiquetasFiltroTubester(generosTubester, generosSeleccionadosTubester, "género");
+        versionesSeleccionadasTubester.dataset.modo = versionesTubester.size ? "versiones seleccionadas" : "todas las versiones";
+        generosSeleccionadosTubester.dataset.modo = generosTubester.size ? "géneros seleccionados" : "todos los géneros";
+    }
+
+    /**
+     * Actualiza el contador y permite iniciar solo cuando el filtro contiene canciones.
+     */
+    function actualizarDisponibilidadTubester() {
+        const total = obtenerCancionesElegiblesTubester().length;
+        contadorCancionesTubester.textContent = `${total} ${total === 1 ? "canción disponible" : "canciones disponibles"}`;
+        btnIniciarTubester.disabled = total === 0;
+    }
+
+    /**
+     * Devuelve las canciones que coinciden con los filtros seleccionados.
+     * @returns {Array<Object>} Canciones filtradas por versión y género.
+     */
+    function obtenerCancionesFiltradas() {
+        const versionSeleccionada = filtroVersionCanciones.value;
+        const generoSeleccionado = filtroGeneroCanciones.value;
+        return cancionesDB.filter(cancion =>
+            (!versionSeleccionada || cancion.version === versionSeleccionada) &&
+            (!generoSeleccionado || cancion.genero === generoSeleccionado)
+        );
+    }
+
+    /**
+     * Filtra el catálogo y renderiza una página de hasta diez canciones.
+     */
+    function renderizarListaCanciones() {
+        const cancionesFiltradas = obtenerCancionesFiltradas();
+        const totalCanciones = cancionesFiltradas.length;
+        const totalPaginas = Math.ceil(totalCanciones / cancionesPorPagina);
+        paginaListaCanciones = totalPaginas
+            ? Math.min(paginaListaCanciones, totalPaginas)
+            : 1;
+        const inicio = (paginaListaCanciones - 1) * cancionesPorPagina;
+        const cancionesPagina = cancionesFiltradas.slice(inicio, inicio + cancionesPorPagina);
+
+        contadorListaCanciones.textContent = `${totalCanciones} ${totalCanciones === 1 ? "canción encontrada" : "canciones encontradas"}`;
+        elementosListaCanciones.replaceChildren();
+
+        if (cancionesPagina.length === 0) {
+            const vacio = document.createElement("p");
+            vacio.className = "lista-canciones-vacia";
+            vacio.textContent = "No hay canciones que coincidan con estos filtros.";
+            elementosListaCanciones.appendChild(vacio);
+        } else {
+            cancionesPagina.forEach(cancion => {
+                const elemento = document.createElement("article");
+                elemento.className = "elemento-cancion";
+
+                const titulo = document.createElement("h3");
+                const artista = cancion.artista || "Artista desconocido";
+                const nombreCancion = cancion.titulo || "Canción sin título";
+                titulo.textContent = `${artista} - ${nombreCancion}`;
+
+                const detalles = document.createElement("p");
+                detalles.className = "detalles-cancion";
+                detalles.textContent = `Género: ${cancion.genero || "Sin especificar"} · Versión: ${cancion.version || "Sin especificar"}`;
+
+                elemento.append(titulo, detalles);
+                elementosListaCanciones.appendChild(elemento);
+            });
+        }
+
+        estadoPaginacionCanciones.textContent = `${totalPaginas ? paginaListaCanciones : 0} / ${totalPaginas}`;
+        btnPaginaAnterior.disabled = paginaListaCanciones <= 1;
+        btnPaginaSiguiente.disabled = paginaListaCanciones >= totalPaginas;
     }
 
     /**
@@ -1402,8 +1712,80 @@ Para cada objeto, coloca el ID indicado en la lista como primer dato dentro del 
     // Menú principal y configuración de partida
     btnNuevaPartida.addEventListener("click", () => {
         seccionMenu.classList.add("oculto");
+        seccionListaCanciones.classList.add("oculto");
+        seccionConfiguracionTubester.classList.add("oculto");
         seccionResultado.classList.add("oculto");
         seccionConfiguracion.classList.remove("oculto");
+    });
+    btnPartidaTubester.addEventListener("click", () => {
+        seccionConfiguracion.classList.add("oculto");
+        seccionConfiguracionTubester.classList.remove("oculto");
+        actualizarOpcionesTubester();
+    });
+    btnVolverConfiguracionTubester.addEventListener("click", () => {
+        seccionConfiguracionTubester.classList.add("oculto");
+        seccionConfiguracion.classList.remove("oculto");
+    });
+    btnRondasTubester.addEventListener("click", () => {
+        const activadas = btnRondasTubester.getAttribute("aria-pressed") !== "true";
+        btnRondasTubester.setAttribute("aria-pressed", String(activadas));
+        btnRondasTubester.textContent = activadas ? "Sí" : "No";
+        controlCantidadRondas.classList.toggle("oculto", !activadas);
+    });
+    cantidadRondasTubester.addEventListener("input", () => {
+        valorCantidadRondas.textContent = cantidadRondasTubester.value;
+    });
+    btnAgregarVersionTubester.addEventListener("click", () => {
+        const version = selectorVersionTubester.value;
+        if (!version) return;
+        versionesTubester.add(version);
+        selectorVersionTubester.value = "";
+        renderizarFiltrosTubester();
+        actualizarDisponibilidadTubester();
+    });
+    btnAgregarGeneroTubester.addEventListener("click", () => {
+        const genero = selectorGeneroTubester.value;
+        if (!genero) return;
+        generosTubester.add(genero);
+        selectorGeneroTubester.value = "";
+        renderizarFiltrosTubester();
+        actualizarDisponibilidadTubester();
+    });
+    btnIniciarTubester.addEventListener("click", iniciarPartidaTubester);
+    btnAbrirListaCanciones.addEventListener("click", () => {
+        seccionMenu.classList.add("oculto");
+        seccionConfiguracion.classList.add("oculto");
+        seccionConfiguracionTubester.classList.add("oculto");
+        seccionResultado.classList.add("oculto");
+        seccionJuego.classList.add("oculto");
+        seccionListaCanciones.classList.remove("oculto");
+        paginaListaCanciones = 1;
+        actualizarFiltrosListaCanciones();
+        renderizarListaCanciones();
+    });
+    btnVolverListaMenu.addEventListener("click", () => {
+        seccionListaCanciones.classList.add("oculto");
+        seccionMenu.classList.remove("oculto");
+    });
+    filtroVersionCanciones.addEventListener("change", () => {
+        paginaListaCanciones = 1;
+        renderizarListaCanciones();
+    });
+    filtroGeneroCanciones.addEventListener("change", () => {
+        paginaListaCanciones = 1;
+        renderizarListaCanciones();
+    });
+    btnPaginaAnterior.addEventListener("click", () => {
+        if (paginaListaCanciones <= 1) return;
+        paginaListaCanciones -= 1;
+        renderizarListaCanciones();
+    });
+    btnPaginaSiguiente.addEventListener("click", () => {
+        const totalCanciones = obtenerCancionesFiltradas().length;
+        const totalPaginas = Math.ceil(totalCanciones / cancionesPorPagina);
+        if (paginaListaCanciones >= totalPaginas) return;
+        paginaListaCanciones += 1;
+        renderizarListaCanciones();
     });
     btnVolverMenu.addEventListener("click", () => {
         seccionConfiguracion.classList.add("oculto");

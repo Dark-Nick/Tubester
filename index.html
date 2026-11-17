@@ -19,15 +19,44 @@
     <div class="contenedor-principal">
         <!-- Pantalla de Inicio / Menú Principal -->
         <header>
-            <h1><span class="brand-tube">Tube</span><span class="brand-ster">sTer</span><span class="brand-version"><span>ver.</span>1.0.3</span></h1>
+            <h1><span class="brand-tube">Tube</span><span class="brand-ster">sTer</span><span class="brand-version"><span>ver.</span>1.1.1</span></h1>
             <p>La fiesta sin límites</p>
         </header>
 
         <main id="seccion-menu" class="card-menu">
             <img class="logo-inicio" src="logo-tubester.png" alt="Logo de TubesTer">
             <button id="btn-nueva-partida" class="btn-principal">🎮 Nueva partida</button>
+            <button id="btn-abrir-lista-canciones" class="btn-secundario">🎼 Lista de canciones</button>
             <button id="btn-abrir-registro" class="btn-secundario btn-registro">➕ Registrar Nuevas Cartas</button>
         </main>
+
+        <section id="seccion-lista-canciones" class="card-lista-canciones oculto" aria-labelledby="titulo-lista-canciones">
+            <button id="btn-volver-lista-menu" class="btn-enlace">← Volver al menú</button>
+            <h2 id="titulo-lista-canciones">Lista de canciones</h2>
+
+            <div class="filtros-lista-canciones">
+                <div class="filtro-lista-canciones">
+                    <label for="filtro-version-canciones">Versión</label>
+                    <select id="filtro-version-canciones" class="input-select">
+                        <option value="">Todas las versiones</option>
+                    </select>
+                </div>
+                <div class="filtro-lista-canciones">
+                    <label for="filtro-genero-canciones">Género</label>
+                    <select id="filtro-genero-canciones" class="input-select">
+                        <option value="">Todos los géneros</option>
+                    </select>
+                </div>
+            </div>
+
+            <p id="contador-lista-canciones" class="contador-lista-canciones" aria-live="polite">Cargando canciones...</p>
+            <div id="elementos-lista-canciones" class="elementos-lista-canciones"></div>
+            <nav class="paginacion-lista-canciones" aria-label="Paginación de canciones">
+                <button id="btn-pagina-anterior" class="btn-secundario" type="button" disabled>← Anterior</button>
+                <span id="estado-paginacion-canciones" aria-live="polite">0 / 0</span>
+                <button id="btn-pagina-siguiente" class="btn-secundario" type="button" disabled>Siguiente →</button>
+            </nav>
+        </section>
 
         <section id="seccion-configuracion" class="card-configuracion oculto" aria-labelledby="titulo-configuracion">
             <button id="btn-volver-menu" class="btn-enlace">← Volver al menú</button>
@@ -80,7 +109,48 @@
             </fieldset>
 
             <button id="btn-partida-clasica" class="btn-principal btn-destacado">🎴 Partida clásica</button>
-            <button class="btn-secundario" disabled>✨ Partida Tubester (próximamente)</button>
+            <button id="btn-partida-tubester" class="btn-secundario btn-tubester">✨ Partida Tubester</button>
+        </section>
+
+        <section id="seccion-configuracion-tubester" class="card-configuracion card-configuracion-tubester oculto" aria-labelledby="titulo-configuracion-tubester">
+            <button id="btn-volver-configuracion-tubester" class="btn-enlace">← Volver a configuración</button>
+            <h2 id="titulo-configuracion-tubester"><span class="texto-configurar">Configurar</span> <span class="texto-partida">partida</span> <span class="brand-tube">Tube</span><span class="brand-ster">sTer</span></h2>
+
+            <div class="configuracion-rondas">
+                <span class="etiqueta-configuracion">Rondas</span>
+                <button id="btn-rondas-tubester" class="btn-secundario btn-toggle-rondas" type="button" aria-pressed="false">No</button>
+            </div>
+            <div id="control-cantidad-rondas" class="control-cantidad-rondas oculto">
+                <label for="cantidad-rondas-tubester">Cantidad de rondas: <strong id="valor-cantidad-rondas">10</strong></label>
+                <input id="cantidad-rondas-tubester" type="range" min="1" max="100" value="10">
+            </div>
+
+            <div class="grupo-filtros-tubester">
+                <label for="selector-version-tubester">Versiones de cartas</label>
+                <div class="control-agregar-filtro">
+                    <select id="selector-version-tubester" class="input-select">
+                        <option value="">Todas las versiones</option>
+                    </select>
+                    <button id="btn-agregar-version-tubester" class="btn-secundario" type="button">Agregar</button>
+                </div>
+                <p class="ayuda-filtros-tubester">Sin versiones seleccionadas se incluirán todas.</p>
+                <div id="versiones-seleccionadas-tubester" class="filtros-seleccionados" aria-label="Versiones seleccionadas"></div>
+            </div>
+
+            <div class="grupo-filtros-tubester">
+                <label for="selector-genero-tubester">Géneros</label>
+                <div class="control-agregar-filtro">
+                    <select id="selector-genero-tubester" class="input-select">
+                        <option value="">Todos los géneros</option>
+                    </select>
+                    <button id="btn-agregar-genero-tubester" class="btn-secundario" type="button">Agregar</button>
+                </div>
+                <p class="ayuda-filtros-tubester">Sin géneros seleccionados se incluirán todos.</p>
+                <div id="generos-seleccionados-tubester" class="filtros-seleccionados" aria-label="Géneros seleccionados"></div>
+            </div>
+
+            <p id="contador-canciones-tubester" class="contador-lista-canciones" aria-live="polite">0 canciones disponibles</p>
+            <button id="btn-iniciar-tubester" class="btn-principal btn-destacado" type="button" disabled>🎲 Iniciar partida</button>
         </section>
 
         <!-- Pantalla del Juego: Modo Ciego y Pantalla de Revelación (Fases 3 y 4) -->
@@ -118,6 +188,7 @@
 
             <!-- BLOQUE A: Experiencia del MODO CIEGO (Fase 3) -->
             <div id="bloque-modo-ciego" class="bloque-fase">
+                <p id="indicador-ronda-tubester" class="indicador-ronda-tubester oculto" aria-live="polite"></p>
                 <p class="instruccion-ciega">Escucha atentamente... ¿De qué año es este hit?</p>
 
                 <!-- Temporizador y barra de progreso de 30s -->

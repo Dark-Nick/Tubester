@@ -66,6 +66,14 @@ header h1 {
     color: var(--accent-color);
 }
 
+.texto-configurar {
+    color: #ff3b30;
+}
+
+.texto-partida {
+    color: var(--accent-color);
+}
+
 .brand-version {
     margin-left: 5px;
     font-size: 0.38em;
@@ -97,6 +105,124 @@ header p {
     object-fit: contain;
     margin: 0 auto;
     border-radius: 18px;
+}
+
+/* Catálogo de canciones con filtros y navegación por páginas. */
+.card-lista-canciones {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 22px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    text-align: left;
+    animation: fadeIn 0.3s ease;
+}
+
+.card-lista-canciones > .btn-enlace {
+    align-self: flex-start;
+    width: auto;
+    margin: -8px 0 0;
+}
+
+.card-lista-canciones h2 {
+    margin: 0;
+    text-align: center;
+    font-size: 22px;
+}
+
+.filtros-lista-canciones {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.filtro-lista-canciones {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.filtro-lista-canciones label {
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.filtro-lista-canciones select {
+    width: 100%;
+    min-width: 0;
+    padding: 10px;
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    background-color: #121212;
+    color: var(--text-primary);
+    font: inherit;
+}
+
+.contador-lista-canciones {
+    margin: 0;
+    color: var(--accent-color);
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.elementos-lista-canciones {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.elemento-cancion {
+    padding: 12px;
+    background-color: #181818;
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+}
+
+.elemento-cancion h3 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 14px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.detalles-cancion {
+    margin: 5px 0 0;
+    color: var(--text-secondary);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.lista-canciones-vacia {
+    margin: 0;
+    padding: 18px 10px;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.paginacion-lista-canciones {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+}
+
+.paginacion-lista-canciones button {
+    min-width: 0;
+    padding: 10px 6px;
+    font-size: 13px;
+}
+
+.paginacion-lista-canciones span {
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
 }
 
 /* Panel de configuración y selectores de partida */
@@ -227,6 +353,177 @@ header p {
 
 .card-configuracion > button:disabled {
     border: 1px solid var(--card-border);
+}
+
+.btn-tubester {
+    border: 1px solid rgba(29, 185, 84, 0.4);
+    color: var(--accent-color);
+}
+
+.card-configuracion-tubester {
+    gap: 16px;
+}
+
+.configuracion-rondas {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.etiqueta-configuracion,
+.grupo-filtros-tubester > label {
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.btn-toggle-rondas {
+    width: auto;
+    min-width: 90px;
+    padding: 10px 18px;
+}
+
+.btn-toggle-rondas[aria-pressed="true"] {
+    border-color: var(--accent-color);
+    background-color: rgba(29, 185, 84, 0.16);
+    color: var(--accent-color);
+}
+
+.control-cantidad-rondas,
+.grupo-filtros-tubester {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.control-cantidad-rondas label {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.control-cantidad-rondas strong {
+    color: var(--accent-color);
+}
+
+.control-cantidad-rondas input[type="range"] {
+    width: 100%;
+    height: 18px;
+    margin: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.control-cantidad-rondas input[type="range"]::-webkit-slider-runnable-track {
+    height: 8px;
+    border-radius: 999px;
+    background: linear-gradient(to right, #ff3b30, var(--accent-color));
+}
+
+.control-cantidad-rondas input[type="range"]::-webkit-slider-thumb {
+    width: 18px;
+    height: 18px;
+    margin-top: -5px;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    background: var(--accent-color);
+}
+
+.control-cantidad-rondas input[type="range"]::-moz-range-track {
+    height: 8px;
+    border-radius: 999px;
+    background: linear-gradient(to right, #ff3b30, var(--accent-color));
+}
+
+.control-cantidad-rondas input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    background: var(--accent-color);
+}
+
+.control-cantidad-rondas input[type="range"]:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 4px;
+}
+
+.control-agregar-filtro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+}
+
+.control-agregar-filtro select {
+    width: 100%;
+    min-width: 0;
+}
+
+.control-agregar-filtro button {
+    width: auto;
+    padding: 10px 14px;
+    font-size: 13px;
+}
+
+.ayuda-filtros-tubester {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.filtros-seleccionados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.filtros-seleccionados:empty::before {
+    color: var(--accent-color);
+    font-size: 12px;
+    content: attr(data-modo);
+}
+
+.etiqueta-filtro-tubester {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    max-width: 100%;
+    padding: 5px 8px;
+    border: 1px solid rgba(29, 185, 84, 0.35);
+    border-radius: 999px;
+    background-color: rgba(29, 185, 84, 0.1);
+    color: var(--text-primary);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.quitar-filtro-tubester {
+    width: auto;
+    padding: 0 2px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 16px;
+    line-height: 1;
+}
+
+.quitar-filtro-tubester:hover {
+    color: var(--danger-color);
+}
+
+.indicador-ronda-tubester {
+    width: 100%;
+    margin: 0;
+    padding: 8px 12px;
+    border: 1px solid rgba(29, 185, 84, 0.35);
+    border-radius: 10px;
+    background-color: rgba(29, 185, 84, 0.1);
+    color: var(--accent-color);
+    font-size: 14px;
+    font-weight: 700;
 }
 
 .btn-registro {
